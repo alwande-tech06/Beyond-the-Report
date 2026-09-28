@@ -8,6 +8,7 @@ added by the group (column `report_page`) to meet the brief's traceability rule.
 """
 from __future__ import annotations
 
+import io
 import re
 from pathlib import Path
 
@@ -503,14 +504,83 @@ ESG_COLUMNS = ["company", "fiscal_year", "pillar", "indicator", "value", "unit",
                "capital", "source_document", "report_page"]
 
 
+ESG_REQUIRED = ["company", "fiscal_year", "indicator", "value"]
+ESG_ALIASES = {"year": "fiscal_year", "fy": "fiscal_year", "financial_year": "fiscal_year",
+               "metric": "indicator", "page": "report_page", "source": "source_document"}
+
+
+def _decode(raw: bytes) -> str:
+    # Excel on Windows saves "CSV" as cp1252 unless "CSV UTF-8" is chosen.
+    for enc in ("utf-8-sig", "cp1252", "latin-1"):
+        try:
+            return raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("utf-8", errors="replace")
+
+
+def _norm_col(c) -> str:
+    c = re.sub(r"[^0-9a-z]+", "_", str(c).strip().lower()).strip("_")
+    return ESG_ALIASES.get(c, c)
+
+
 def load_esg(file) -> pd.DataFrame:
-    df = pd.read_csv(file)
-    missing = [c for c in ESG_COLUMNS if c not in df.columns]
-    if missing:
-        raise ValueError(f"ESG file is missing columns: {', '.join(missing)}")
-    df["value"] = pd.to_numeric(df["value"], errors="coerce")
-    df = df.dropna(subset=["value"])
+    """Read the ESG template CSV, tolerating Excel encodings, ; or tab delimiters and title rows above the table.
+
+    Warnings about skipped rows are returned in df.attrs["warnings"].
+    """
+    raw = file.read() if hasattr(file, "read") else Path(file).read_bytes()
+    text = _decode(raw).replace("\xa0", " ")
+    lines = text.splitlines()
+
+    # Find the header row: the first line that names the required columns, whatever the delimiter.
+    header_at, sep = None, ","
+    for i, line in enumerate(lines[:200]):
+        for d in (",", ";", "\t"):
+            cols = {_norm_col(c) for c in line.split(d)}
+            if all(r in cols for r in ESG_REQUIRED):
+                header_at, sep = i, d
+                break
+        if header_at is not None:
+            break
+    if header_at is None:
+        first = next((ln.strip() for ln in lines if ln.strip()), "")[:120]
+        raise ValueError(
+            "this is not in the ESG template layout. The file needs a header row with the columns "
+            f"{', '.join(ESG_REQUIRED)} (download the template to see the layout). "
+            f'The file starts with: "{first}"'
+        )
+
+    df = pd.read_csv(io.StringIO("\n".join(lines[header_at:])), sep=sep, dtype=str,
+                     skip_blank_lines=True, on_bad_lines="skip", engine="python")
+    df.columns = [_norm_col(c) for c in df.columns]
+    df = df.loc[:, ~df.columns.duplicated()]
+    for c in ESG_COLUMNS:
+        if c not in df.columns:
+            df[c] = ""
+    df = df[ESG_COLUMNS].copy()
+    for c in df.columns:
+        df[c] = df[c].fillna("").astype(str).str.strip()
+
+    warnings = []
+    if header_at:
+        warnings.append(f"Skipped {header_at} line(s) above the header row.")
+    df["value"] = pd.to_numeric(df["value"].str.replace(r"[\s,%]", "", regex=True), errors="coerce")
+    df["fiscal_year"] = pd.to_numeric(df["fiscal_year"].str.extract(r"(\d{4})")[0], errors="coerce")
+    df = df.dropna(subset=["value", "fiscal_year"])
+    df = df[df.indicator != ""]
     df["fiscal_year"] = df.fiscal_year.astype(int)
+
+    unknown = sorted(set(df.company) - set(COMPANIES))
+    if unknown:
+        warnings.append(f"Ignored rows for companies outside the sample: {', '.join(unknown)}. "
+                        f"Company names must match exactly: {', '.join(COMPANIES)}.")
+        df = df[df.company.isin(COMPANIES)]
+    if df.empty:
+        raise ValueError("no usable rows: every row was blank, non-numeric or for a company outside the sample. "
+                         + " ".join(warnings))
+    df = df.reset_index(drop=True)
+    df.attrs["warnings"] = warnings
     return df
 
 

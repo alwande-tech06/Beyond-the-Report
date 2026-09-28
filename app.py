@@ -177,10 +177,11 @@ def style_fig(fig: go.Figure, height: int = 420, legend: bool = True) -> go.Figu
     fig.update_layout(
         template="simple_white", height=height, paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF", font=dict(family=FONT, size=13, color="#1F2A37"),
         margin=dict(l=10, r=10, t=80 if titled and legend else 40, b=10), hoverlabel=dict(font_family=FONT),
-        title=dict(y=0.98, yanchor="top", font=dict(color=NAVY)) if titled else None,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, title_text="") if legend else None,
         showlegend=legend,
     )
+    if titled:
+        fig.update_layout(title=dict(y=0.98, yanchor="top", font=dict(color=NAVY)))
     fig.update_xaxes(showgrid=False)
     fig.update_yaxes(gridcolor="#E8ECF1", showgrid=True, zeroline=True, zerolinecolor="#B7C0CB", linecolor="#D9DEE5")
     fig.update_xaxes(linecolor="#D9DEE5")
@@ -751,9 +752,14 @@ def page_esg():
         up = st.file_uploader("Upload completed ESG file", type="csv")
         if up is not None:
             try:
-                st.session_state.esg_df = L.load_esg(up)
-                st.success(f"Loaded {len(st.session_state.esg_df)} ESG values.")
-                st.rerun()
+                df = L.load_esg(up)
+                if st.session_state.get("esg_upload") != up.file_id:
+                    st.session_state.esg_upload = up.file_id
+                    st.session_state.esg_df = df
+                    st.rerun()
+                st.success(f"Loaded {len(df)} ESG values from {up.name}.")
+                for w in df.attrs.get("warnings", []):
+                    st.warning(w)
             except Exception as e:  # noqa: BLE001
                 st.error(f"Could not read the file: {e}")
         if not esg.empty and st.button("Remove ESG data"):
