@@ -27,7 +27,9 @@ st.set_page_config(page_title="Beyond the Report - JSE mining", layout="wide")
 
 COLOURS = {c: m["colour"] for c, m in L.COMPANIES.items()}
 COMPANY_ORDER = list(L.COMPANIES)
-FONT = "IBM Plex Sans, Segoe UI, Arial, sans-serif"
+FONT = "Poppins, Segoe UI, Arial, sans-serif"
+NAVY = "#1F3B5A"
+ORANGE = "#F39C12"
 
 # Average USD/ZAR rates used only to convert Gold Fields' US$ amounts. Editable in the sidebar.
 # Verify against the SARB / the companies' own reported average rates before submission.
@@ -36,18 +38,46 @@ FX_DEFAULT = {2021: 14.79, 2022: 16.36, 2023: 18.45, 2024: 18.33, 2025: 17.90}
 st.markdown(
     f"""
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
       html, body, [class*="css"], .stMarkdown, .stText {{ font-family: {FONT}; }}
-      h1, h2, h3 {{ font-family: 'IBM Plex Serif', Georgia, serif; font-weight: 600; letter-spacing: -0.01em; }}
-      h1 {{ font-size: 2.1rem; margin-bottom: 0.1rem; }}
-      .lede {{ color: #4A525A; font-size: 1.02rem; max-width: 72ch; line-height: 1.55; }}
-      .insight {{ border-left: 3px solid #2F7F79; padding: 0.35rem 0 0.35rem 0.9rem; margin: 0.45rem 0; max-width: 80ch; }}
-      .insight.warn {{ border-left-color: #A0522D; }}
-      .tag {{ display:inline-block; padding: 0.05rem 0.5rem; border-radius: 3px; font-size: 0.82rem; font-weight: 500; }}
-      .tag.low {{ background:#DCEBE8; color:#1F5C57; }}
-      .tag.mod {{ background:#F1E6C8; color:#6B5410; }}
-      .tag.high {{ background:#F0D9CF; color:#7A3A1E; }}
-      div[data-testid="stMetricValue"] {{ font-size: 1.55rem; }}
+      h1, h2, h3 {{ font-family: {FONT}; font-weight: 600; letter-spacing: -0.01em; color: {NAVY}; }}
+      h1 {{ font-size: 1.9rem; margin-bottom: 0.1rem; }}
+      h3 {{ font-size: 1.15rem; }}
+      .lede {{ color: #5A6675; font-size: 1.0rem; max-width: 72ch; line-height: 1.55; }}
+
+      /* Cards: metrics, charts, tables and bordered containers sit on white with a soft shadow */
+      div[data-testid="stMetric"], div[data-testid="stPlotlyChart"], div[data-testid="stDataFrame"],
+      div[data-testid="stVerticalBlockBorderWrapper"] {{
+        background: #FFFFFF; border-radius: 6px; box-shadow: 0 2px 10px rgba(31, 59, 90, 0.08);
+      }}
+      div[data-testid="stMetric"] {{ padding: 0.9rem 1rem; border-top: 3px solid {ORANGE}; }}
+      div[data-testid="stPlotlyChart"] {{ padding: 0.6rem; }}
+      div[data-testid="stMetricLabel"] p {{ color: #5A6675; font-weight: 500; }}
+      div[data-testid="stMetricValue"] {{ font-size: 1.7rem; color: {NAVY}; }}
+      /* First card in a row is the navy "hero" card */
+      div[data-testid="stHorizontalBlock"] > div:first-child div[data-testid="stMetric"] {{
+        background: {NAVY}; border-top-color: {NAVY};
+      }}
+      div[data-testid="stHorizontalBlock"] > div:first-child div[data-testid="stMetric"] * {{ color: #FFFFFF !important; }}
+
+      /* Sidebar brand block */
+      .brand {{ text-align: center; padding: 0.4rem 0 0.8rem; }}
+      .brand .avatar {{ width: 76px; height: 76px; margin: 0 auto 0.7rem; border-radius: 50%; background: #FFFFFF;
+                       display: flex; align-items: center; justify-content: center;
+                       box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12); }}
+      .brand .name {{ font-weight: 600; font-size: 1.15rem; letter-spacing: 0.06em; text-transform: uppercase; }}
+      .brand .sub {{ font-size: 0.8rem; opacity: 0.75; }}
+      section[data-testid="stSidebar"] div[role="radiogroup"] label {{ padding: 0.3rem 0.4rem; border-radius: 4px; }}
+      section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {{ background: rgba(255, 255, 255, 0.08); }}
+
+      .insight {{ background: #FFFFFF; border-left: 4px solid {ORANGE}; border-radius: 4px; padding: 0.55rem 0.9rem;
+                 margin: 0.45rem 0; max-width: 80ch; box-shadow: 0 1px 6px rgba(31, 59, 90, 0.06); }}
+      .insight.warn {{ border-left-color: #C0392B; }}
+      .tag {{ display:inline-block; padding: 0.1rem 0.6rem; border-radius: 10px; font-size: 0.8rem; font-weight: 500; }}
+      .tag.low {{ background:#DDEBF7; color:{NAVY}; }}
+      .tag.mod {{ background:#FDEBD0; color:#8A5A00; }}
+      .tag.high {{ background:#F6D5D1; color:#8E2B20; }}
+      .stButton button[kind="primary"], .stDownloadButton button {{ border-radius: 14px; }}
     </style>
     """,
     unsafe_allow_html=True,
@@ -143,14 +173,17 @@ def fmt_metric(var: str, v: float) -> str:
 
 
 def style_fig(fig: go.Figure, height: int = 420, legend: bool = True) -> go.Figure:
+    titled = bool(fig.layout.title.text)
     fig.update_layout(
-        template="simple_white", height=height, font=dict(family=FONT, size=13, color="#1E2328"),
-        margin=dict(l=10, r=10, t=40, b=10), hoverlabel=dict(font_family=FONT),
+        template="simple_white", height=height, paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF", font=dict(family=FONT, size=13, color="#1F2A37"),
+        margin=dict(l=10, r=10, t=80 if titled and legend else 40, b=10), hoverlabel=dict(font_family=FONT),
+        title=dict(y=0.98, yanchor="top", font=dict(color=NAVY)) if titled else None,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, title_text="") if legend else None,
         showlegend=legend,
     )
     fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(gridcolor="#E3E6E2", showgrid=True, zeroline=True, zerolinecolor="#9AA3A8")
+    fig.update_yaxes(gridcolor="#E8ECF1", showgrid=True, zeroline=True, zerolinecolor="#B7C0CB", linecolor="#D9DEE5")
+    fig.update_xaxes(linecolor="#D9DEE5")
     return fig
 
 
@@ -164,8 +197,15 @@ def band_tag(band) -> str:
 # --------------------------------------------------------------------------------------
 # Sidebar
 # --------------------------------------------------------------------------------------
-st.sidebar.title("Beyond the Report")
-st.sidebar.caption("APFA802 · JSE mining sample · FY2021–FY2025")
+st.sidebar.markdown(
+    f"""<div class="brand">
+      <div class="avatar"><svg width="40" height="40" viewBox="0 0 24 24" fill="{NAVY}">
+        <path d="M3 20h18v2H3zM5 10h3v8H5zm5.5-4h3v12h-3zM16 13h3v5h-3z"/></svg></div>
+      <div class="name">Beyond the Report</div>
+      <div class="sub">APFA802 · JSE mining · FY2021–FY2025</div>
+    </div>""",
+    unsafe_allow_html=True,
+)
 
 PAGES = ["Overview", "Reporting quality", "Trends", "Peer benchmark", "Risk scorecard", "ESG indicators",
          "Relationships", "Company profile", "Data and quality", "Test the dashboard"]
@@ -252,8 +292,8 @@ def page_overview():
     fig = px.line(score, x="fiscal_year", y="Composite", color="company", markers=True,
                   color_discrete_map=COLOURS, category_orders={"company": COMPANY_ORDER},
                   labels={"fiscal_year": "Financial year", "Composite": "Risk score (100 = lowest risk)"})
-    fig.add_hrect(y0=0, y1=40, fillcolor="#F0D9CF", opacity=0.35, line_width=0)
-    fig.add_hrect(y0=65, y1=100, fillcolor="#DCEBE8", opacity=0.35, line_width=0)
+    fig.add_hrect(y0=0, y1=40, fillcolor="#F6D5D1", opacity=0.35, line_width=0)
+    fig.add_hrect(y0=65, y1=100, fillcolor="#DDEBF7", opacity=0.45, line_width=0)
     fig.update_xaxes(dtick=1)
     fig.update_yaxes(range=[0, 100])
     st.plotly_chart(style_fig(fig), width="stretch")
@@ -296,7 +336,7 @@ def insights() -> list[tuple[str, bool]]:
 
 
 BAND_CLS = {"Strong": "low", "Moderate": "mod", "Weak": "high"}
-SEQ = [[0, "#F0D9CF"], [0.5, "#F1E6C8"], [1, "#4E9C92"]]
+SEQ = [[0, "#FAD7A0"], [0.5, "#EEF1F5"], [1, "#6E9CC8"]]
 
 
 def heat(z: pd.DataFrame, text: pd.DataFrame | None = None, zmax: float = 100, height: int = 300) -> go.Figure:
@@ -590,7 +630,7 @@ def page_benchmark():
         text.append([fmt_metric(v, x) for x in s.values])
     fig = go.Figure(go.Heatmap(
         z=z, x=list(cur.index), y=[L.LABELS[v] for v in ratio_list], text=text, texttemplate="%{text}",
-        colorscale=[[0, "#C98B6B"], [0.5, "#EFE7D2"], [1, "#4E9C92"]], showscale=False, xgap=2, ygap=2,
+        colorscale=[[0, "#F5B041"], [0.5, "#EEF1F5"], [1, "#6E9CC8"]], showscale=False, xgap=2, ygap=2,
         hovertemplate="%{x}<br>%{y}: %{text}<extra></extra>",
     ))
     fig.update_yaxes(autorange="reversed", showgrid=False)
@@ -670,7 +710,7 @@ def page_scorecard():
         focus = st.selectbox("Company", list(cur_sc.index))
         d = score[score.company == focus].melt(id_vars="fiscal_year", value_vars=pillars, var_name="Pillar", value_name="Score")
         fig = px.line(d, x="fiscal_year", y="Score", color="Pillar", markers=True,
-                      color_discrete_sequence=["#2F7F79", "#6B7B8C", "#A0522D", "#C9A227", "#3A3F44", "#7A9E4B"],
+                      color_discrete_sequence=[NAVY, ORANGE, "#5DA9E9", "#8C98A4", "#2E8B80", "#E4B363"],
                       labels={"fiscal_year": "Financial year"})
         comp = score[score.company == focus]
         fig.add_scatter(x=comp.fiscal_year, y=comp.Composite, name="Composite", mode="lines",
@@ -735,7 +775,7 @@ def page_esg():
     cov = (have / total).unstack().reindex([c for c in COMPANY_ORDER if c in companies]).fillna(0) * 100
     fig = go.Figure(go.Heatmap(z=cov.values, x=[str(c) for c in cov.columns], y=cov.index, zmin=0, zmax=100,
                                text=cov.round(0).astype(int).astype(str) + "%", texttemplate="%{text}",
-                               colorscale=[[0, "#F0D9CF"], [1, "#4E9C92"]], showscale=False, xgap=2, ygap=2))
+                               colorscale=[[0, "#FAD7A0"], [1, "#6E9CC8"]], showscale=False, xgap=2, ygap=2))
     fig.update_yaxes(autorange="reversed")
     st.plotly_chart(style_fig(fig, 300, legend=False), width="stretch")
 
@@ -799,7 +839,7 @@ def page_relationships():
     corr = wide[ratio_list].corr(method="spearman" if method.startswith("Spear") else "pearson")
     labels = [L.LABELS[v] for v in ratio_list]
     fig = go.Figure(go.Heatmap(z=corr.values, x=labels, y=labels, zmin=-1, zmax=1, text=corr.round(2).values,
-                               texttemplate="%{text}", colorscale=[[0, "#A0522D"], [0.5, "#F6F5F0"], [1, "#2F7F79"]],
+                               texttemplate="%{text}", colorscale=[[0, "#E67E22"], [0.5, "#F7F8FA"], [1, NAVY]],
                                xgap=1, ygap=1))
     fig.update_yaxes(autorange="reversed")
     st.plotly_chart(style_fig(fig, 560, legend=False), width="stretch")
@@ -855,10 +895,10 @@ def page_profile():
     st.caption(f"Million, {'R' if cur_ccy != 'USD' else 'US$'}.")
 
     fig = go.Figure()
-    fig.add_bar(x=d.index, y=d.operating_cash_flow, name="Operating cash flow", marker_color="#2F7F79")
-    fig.add_bar(x=d.index, y=-d.capex, name="Capex", marker_color="#6B7B8C")
-    fig.add_bar(x=d.index, y=-d.dividends_paid, name="Dividends", marker_color="#C9A227")
-    fig.add_scatter(x=d.index, y=d.net_profit, name="Net profit", mode="lines+markers", line=dict(color="#A0522D", width=3))
+    fig.add_bar(x=d.index, y=d.operating_cash_flow, name="Operating cash flow", marker_color=NAVY)
+    fig.add_bar(x=d.index, y=-d.capex, name="Capex", marker_color="#8C98A4")
+    fig.add_bar(x=d.index, y=-d.dividends_paid, name="Dividends", marker_color=ORANGE)
+    fig.add_scatter(x=d.index, y=d.net_profit, name="Net profit", mode="lines+markers", line=dict(color="#5DA9E9", width=3))
     fig.update_layout(barmode="relative", title="Where the cash went")
     fig.update_xaxes(dtick=1)
     st.plotly_chart(style_fig(fig, 420), width="stretch")

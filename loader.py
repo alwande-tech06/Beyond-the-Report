@@ -25,23 +25,23 @@ COMPANIES = {
     "Valterra Platinum": dict(
         file="valterra_platinum.xlsx", ticker="VAL", commodity="PGMs",
         currency="ZAR", fy_end="31 Dec", scale="suffix",  # values like 215B / 966M in rand
-        colour="#6B7B8C",
+        colour="#1F3B5A",
     ),
     "Impala Platinum": dict(
         file="impala_platinum.xlsx", ticker="IMP", commodity="PGMs",
-        currency="ZAR", fy_end="30 Jun", scale="Rm", colour="#2F7F79",
+        currency="ZAR", fy_end="30 Jun", scale="Rm", colour="#F39C12",
     ),
     "Sibanye-Stillwater": dict(
         file="sibanye_stillwater.xlsx", ticker="SSW", commodity="PGMs & gold",
-        currency="ZAR", fy_end="31 Dec", scale="suffix", colour="#A0522D",
+        currency="ZAR", fy_end="31 Dec", scale="suffix", colour="#5DA9E9",
     ),
     "Gold Fields": dict(
         file="gold_fields.xlsx", ticker="GFI", commodity="Gold",
-        currency="USD", fy_end="31 Dec", scale="USDm", colour="#C9A227",
+        currency="USD", fy_end="31 Dec", scale="USDm", colour="#8C98A4",
     ),
     "Exxaro Resources": dict(
         file="exxaro_resources.xlsx", ticker="EXX", commodity="Coal & iron ore",
-        currency="ZAR", fy_end="31 Dec", scale="Rm", colour="#3A3F44",
+        currency="ZAR", fy_end="31 Dec", scale="Rm", colour="#2E8B80",
     ),
 }
 
