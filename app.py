@@ -23,7 +23,7 @@ APP_DIR = Path(__file__).parent
 ESG_FILE = APP_DIR / "data" / "esg_data.csv"
 FEEDBACK_FILE = APP_DIR / "data" / "feedback.csv"
 
-st.set_page_config(page_title="Beyond the Report - JSE mining", page_icon="⛏️", layout="wide")
+st.set_page_config(page_title="Beyond the Report - JSE mining", layout="wide")
 
 COLOURS = {c: m["colour"] for c, m in L.COMPANIES.items()}
 COMPANY_ORDER = list(L.COMPANIES)
