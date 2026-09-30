@@ -8,6 +8,7 @@ added by the group (column `report_page`) to meet the brief's traceability rule.
 """
 from __future__ import annotations
 
+import csv
 import io
 import re
 from pathlib import Path
@@ -551,7 +552,16 @@ def load_esg(file) -> pd.DataFrame:
             f'The file starts with: "{first}"'
         )
 
-    df = pd.read_csv(io.StringIO("\n".join(lines[header_at:])), sep=sep, dtype=str,
+    # Rows saved as one quoted cell ("Impala Platinum,2021,E,...") show up in Excel as a single column;
+    # unwrap them so they parse like the rest.
+    body, unwrapped = [], 0
+    for line in lines[header_at:]:
+        fields = next(csv.reader([line], delimiter=sep), [])
+        if fields and fields[0].count(sep) >= len(ESG_REQUIRED) - 1 and not any(f.strip() for f in fields[1:]):
+            line, unwrapped = fields[0], unwrapped + 1
+        body.append(line)
+
+    df = pd.read_csv(io.StringIO("\n".join(body)), sep=sep, dtype=str,
                      skip_blank_lines=True, on_bad_lines="skip", engine="python")
     df.columns = [_norm_col(c) for c in df.columns]
     df = df.loc[:, ~df.columns.duplicated()]
@@ -565,8 +575,14 @@ def load_esg(file) -> pd.DataFrame:
     warnings = []
     if header_at:
         warnings.append(f"Skipped {header_at} line(s) above the header row.")
+    if unwrapped:
+        warnings.append(f"Repaired {unwrapped} row(s) that were saved as a single quoted cell.")
     df["value"] = pd.to_numeric(df["value"].str.replace(r"[\s,%]", "", regex=True), errors="coerce")
     df["fiscal_year"] = pd.to_numeric(df["fiscal_year"].str.extract(r"(\d{4})")[0], errors="coerce")
+    blank = df[df.value.isna() & (df.indicator != "")].groupby("company").size()
+    if not blank.empty:
+        warnings.append("Rows with no value were ignored: "
+                        + ", ".join(f"{c} {n}" for c, n in blank.items() if c) + ".")
     df = df.dropna(subset=["value", "fiscal_year"])
     df = df[df.indicator != ""]
     df["fiscal_year"] = df.fiscal_year.astype(int)

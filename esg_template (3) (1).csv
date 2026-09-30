@@ -1,0 +1,351 @@
+company,fiscal_year,pillar,indicator,value,unit,better_when,capital,source_document,report_page
+Valterra Platinum,2021,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Valterra Platinum,2021,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Valterra Platinum,2021,E,Energy consumption,,GJ,lower,Natural,,
+Valterra Platinum,2021,E,Water withdrawal,,ML,lower,Natural,,
+Valterra Platinum,2021,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Valterra Platinum,2021,S,Fatalities,,count,lower,Human,,
+Valterra Platinum,2021,S,Lost-time injury frequency rate (LTIFR),,per million hours,lower,Human,,
+Valterra Platinum,2021,S,Employees,,number,n/a,Human,,
+Valterra Platinum,2021,S,Women in workforce,,%,higher,Human,,
+Valterra Platinum,2021,S,Training spend,,R million,higher,Human,,
+Valterra Platinum,2021,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Valterra Platinum,2021,G,Independent directors on board,,%,higher,Social and relationship,,
+Valterra Platinum,2021,G,Women on board,,%,higher,Social and relationship,,
+"Valterra Platinum,2021,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Valterra Platinum,2022,E,Scope 1 GHG emissions,536000,tCO2e,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 71 (kt x1000)
+Valterra Platinum,2022,E,Scope 2 GHG emissions,3552000,tCO2e,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 72 (kt x1000)
+Valterra Platinum,2022,E,Energy consumption,18850000,GJ,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 53 (million GJ x1e6)
+Valterra Platinum,2022,E,Water withdrawal,42193,ML,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '5. Water' row 14
+Valterra Platinum,2022,E,Significant environmental incidents (level 3+),1,count,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' rows 93-94 (level 3 + level 4/5)
+Valterra Platinum,2022,S,Fatalities,0,count,lower,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '1. Safety' row 3
+Valterra Platinum,2022,S,Lost-time injury frequency rate (LTIFR),1.95,per million hours,lower,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '1. Safety' row 31
+Valterra Platinum,2022,S,Employees,21724,number,n/a,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 57
+Valterra Platinum,2022,S,Women in workforce,19,%,higher,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 62
+Valterra Platinum,2022,S,Training spend,1189,R million,higher,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 14
+Valterra Platinum,2022,S,Socio-economic development spend,580,R million,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '4. Social Performance & CSI' row 53 (SLP & CSI spend)
+Valterra Platinum,2022,G,Independent directors on board,64,%,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '13. Governance' rows 21-22
+Valterra Platinum,2022,G,Women on board,50,%,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '13. Governance' row 6
+"Valterra Platinum,2022,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Valterra Platinum,2023,E,Scope 1 GHG emissions,587000,tCO2e,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 71 (kt x1000)
+Valterra Platinum,2023,E,Scope 2 GHG emissions,3703000,tCO2e,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 72 (kt x1000)
+Valterra Platinum,2023,E,Energy consumption,20610000,GJ,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 53 (million GJ x1e6)
+Valterra Platinum,2023,E,Water withdrawal,37522.66,ML,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '5. Water' row 14
+Valterra Platinum,2023,E,Significant environmental incidents (level 3+),0,count,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' rows 93-94 (level 3 + level 4/5)
+Valterra Platinum,2023,S,Fatalities,0,count,lower,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '1. Safety' row 3
+Valterra Platinum,2023,S,Lost-time injury frequency rate (LTIFR),1.45,per million hours,lower,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '1. Safety' row 31
+Valterra Platinum,2023,S,Employees,22334,number,n/a,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 57
+Valterra Platinum,2023,S,Women in workforce,18,%,higher,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 62
+Valterra Platinum,2023,S,Training spend,1082.5,R million,higher,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 14
+Valterra Platinum,2023,S,Socio-economic development spend,717,R million,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '4. Social Performance & CSI' row 53 (SLP & CSI spend)
+Valterra Platinum,2023,G,Independent directors on board,66.66,%,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '13. Governance' rows 21-22
+Valterra Platinum,2023,G,Women on board,25,%,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '13. Governance' row 6
+"Valterra Platinum,2023,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Valterra Platinum,2024,E,Scope 1 GHG emissions,578000,tCO2e,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 71 (kt x1000)
+Valterra Platinum,2024,E,Scope 2 GHG emissions,3659000,tCO2e,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 72 (kt x1000)
+Valterra Platinum,2024,E,Energy consumption,19880000,GJ,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 53 (million GJ x1e6)
+Valterra Platinum,2024,E,Water withdrawal,35862,ML,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '5. Water' row 14
+Valterra Platinum,2024,E,Significant environmental incidents (level 3+),0,count,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' rows 93-94 (level 3 + level 4/5)
+Valterra Platinum,2024,S,Fatalities,3,count,lower,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '1. Safety' row 3
+Valterra Platinum,2024,S,Lost-time injury frequency rate (LTIFR),1.44,per million hours,lower,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '1. Safety' row 31
+Valterra Platinum,2024,S,Employees,19637,number,n/a,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 57
+Valterra Platinum,2024,S,Women in workforce,18,%,higher,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 62
+Valterra Platinum,2024,S,Training spend,1216,R million,higher,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 14
+Valterra Platinum,2024,S,Socio-economic development spend,578,R million,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '4. Social Performance & CSI' row 53 (SLP & CSI spend)
+Valterra Platinum,2024,G,Independent directors on board,81.81,%,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '13. Governance' rows 21-22
+Valterra Platinum,2024,G,Women on board,27,%,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '13. Governance' row 6
+"Valterra Platinum,2024,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Valterra Platinum,2025,E,Scope 1 GHG emissions,576000,tCO2e,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 71 (kt x1000)
+Valterra Platinum,2025,E,Scope 2 GHG emissions,3748000,tCO2e,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 72 (kt x1000)
+Valterra Platinum,2025,E,Energy consumption,19730000,GJ,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' row 53 (million GJ x1e6)
+Valterra Platinum,2025,E,Water withdrawal,44860.95,ML,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '5. Water' row 14
+Valterra Platinum,2025,E,Significant environmental incidents (level 3+),0,count,lower,Natural,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '3. Environmental (quantitative)' rows 93-94 (level 3 + level 4/5)
+Valterra Platinum,2025,S,Fatalities,2,count,lower,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '1. Safety' row 3
+Valterra Platinum,2025,S,Lost-time injury frequency rate (LTIFR),1.25,per million hours,lower,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '1. Safety' row 31
+Valterra Platinum,2025,S,Employees,19583,number,n/a,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 57
+Valterra Platinum,2025,S,Women in workforce,19,%,higher,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 62
+Valterra Platinum,2025,S,Training spend,1068,R million,higher,Human,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '12 Human Resources' row 14
+Valterra Platinum,2025,S,Socio-economic development spend,399,R million,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '4. Social Performance & CSI' row 53 (SLP & CSI spend)
+Valterra Platinum,2025,G,Independent directors on board,84.62,%,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '13. Governance' rows 21-22
+Valterra Platinum,2025,G,Women on board,38,%,higher,Social and relationship,Valterra Platinum sustainability data book 2025 (xlsx),Sheet '13. Governance' row 6
+"Valterra Platinum,2025,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+"Impala Platinum,2021,E,Scope 1 GHG emissions,493817,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total direct CO2, t)""",,,,,,,,,
+"Impala Platinum,2021,E,Scope 2 GHG emissions,3573388,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total indirect CO2, t)""",,,,,,,,,
+"Impala Platinum,2021,E,Energy consumption,19614000,GJ,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Group energy, 000 GJ x1000)""",,,,,,,,,
+"Impala Platinum,2021,E,Water withdrawal,24802,ML,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Total water withdrawn, Ml)""",,,,,,,,,
+Impala Platinum,2021,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Impala Platinum,2021,S,Fatalities,3,count,lower,Human,Implats ESG Report 2025 (pdf),p.95 (Group total)
+"Impala Platinum,2021,S,Lost-time injury frequency rate (LTIFR),4.92,per million hours,lower,Human,Implats ESG Report 2025 (pdf),""p.97 (Group total, pmmhw)""",,,,,,,,,
+Impala Platinum,2021,S,Employees,,number,n/a,Human,,
+Impala Platinum,2021,S,Women in workforce,,%,higher,Human,,
+"Impala Platinum,2021,S,Training spend,719,R million,higher,Human,Implats ESG Report 2025 (pdf),""p.93 (skills development spend, SA operations only, Rm)""",,,,,,,,,
+Impala Platinum,2021,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Impala Platinum,2021,G,Independent directors on board,,%,higher,Social and relationship,,
+Impala Platinum,2021,G,Women on board,,%,higher,Social and relationship,,
+"Impala Platinum,2021,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+"Impala Platinum,2022,E,Scope 1 GHG emissions,527248,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total direct CO2, t)""",,,,,,,,,
+"Impala Platinum,2022,E,Scope 2 GHG emissions,3544460,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total indirect CO2, t)""",,,,,,,,,
+"Impala Platinum,2022,E,Energy consumption,19749000,GJ,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Group energy, 000 GJ x1000)""",,,,,,,,,
+"Impala Platinum,2022,E,Water withdrawal,24911,ML,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Total water withdrawn, Ml)""",,,,,,,,,
+Impala Platinum,2022,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Impala Platinum,2022,S,Fatalities,7,count,lower,Human,Implats ESG Report 2025 (pdf),p.95 (Group total)
+"Impala Platinum,2022,S,Lost-time injury frequency rate (LTIFR),4.21,per million hours,lower,Human,Implats ESG Report 2025 (pdf),""p.97 (Group total, pmmhw)""",,,,,,,,,
+Impala Platinum,2022,S,Employees,,number,n/a,Human,,
+Impala Platinum,2022,S,Women in workforce,,%,higher,Human,,
+"Impala Platinum,2022,S,Training spend,864,R million,higher,Human,Implats ESG Report 2025 (pdf),""p.93 (skills development spend, SA operations only, Rm)""",,,,,,,,,
+Impala Platinum,2022,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Impala Platinum,2022,G,Independent directors on board,,%,higher,Social and relationship,,
+Impala Platinum,2022,G,Women on board,,%,higher,Social and relationship,,
+"Impala Platinum,2022,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+"Impala Platinum,2023,E,Scope 1 GHG emissions,498569,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total direct CO2, t)""",,,,,,,,,
+"Impala Platinum,2023,E,Scope 2 GHG emissions,3523981,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total indirect CO2, t)""",,,,,,,,,
+"Impala Platinum,2023,E,Energy consumption,20016000,GJ,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Group energy, 000 GJ x1000)""",,,,,,,,,
+"Impala Platinum,2023,E,Water withdrawal,26850,ML,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Total water withdrawn, Ml)""",,,,,,,,,
+Impala Platinum,2023,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Impala Platinum,2023,S,Fatalities,5,count,lower,Human,Implats ESG Report 2025 (pdf),p.95 (Group total)
+"Impala Platinum,2023,S,Lost-time injury frequency rate (LTIFR),3.92,per million hours,lower,Human,Implats ESG Report 2025 (pdf),""p.97 (Group total, pmmhw)""",,,,,,,,,
+Impala Platinum,2023,S,Employees,,number,n/a,Human,,
+Impala Platinum,2023,S,Women in workforce,,%,higher,Human,,
+"Impala Platinum,2023,S,Training spend,1018,R million,higher,Human,Implats ESG Report 2025 (pdf),""p.93 (skills development spend, SA operations only, Rm)""",,,,,,,,,
+Impala Platinum,2023,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Impala Platinum,2023,G,Independent directors on board,,%,higher,Social and relationship,,
+Impala Platinum,2023,G,Women on board,,%,higher,Social and relationship,,
+"Impala Platinum,2023,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+"Impala Platinum,2024,E,Scope 1 GHG emissions,507759,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total direct CO2, t)""",,,,,,,,,
+"Impala Platinum,2024,E,Scope 2 GHG emissions,3790729,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total indirect CO2, t)""",,,,,,,,,
+"Impala Platinum,2024,E,Energy consumption,21904000,GJ,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Group energy, 000 GJ x1000)""",,,,,,,,,
+"Impala Platinum,2024,E,Water withdrawal,32990,ML,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Total water withdrawn, Ml)""",,,,,,,,,
+"Impala Platinum,2024,E,Significant environmental incidents (level 3+),0,count,lower,Natural,Implats ESG Report 2025 (pdf),""p.63 (two level 3, none level 4/5)""",,,,,,,,,
+Impala Platinum,2024,S,Fatalities,19,count,lower,Human,Implats ESG Report 2025 (pdf),p.95 (Group total)
+"Impala Platinum,2024,S,Lost-time injury frequency rate (LTIFR),3.9,per million hours,lower,Human,Implats ESG Report 2025 (pdf),""p.97 (Group total, pmmhw)""",,,,,,,,,
+Impala Platinum,2024,S,Employees,,number,n/a,Human,,
+Impala Platinum,2024,S,Women in workforce,,%,higher,Human,,
+"Impala Platinum,2024,S,Training spend,921,R million,higher,Human,Implats ESG Report 2025 (pdf),""p.93 (skills development spend, SA operations only, Rm)""",,,,,,,,,
+Impala Platinum,2024,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Impala Platinum,2024,G,Independent directors on board,,%,higher,Social and relationship,,
+Impala Platinum,2024,G,Women on board,54,%,higher,Social and relationship,Implats ESG Report 2025 (pdf),p.30 (women representation on board)
+"Impala Platinum,2024,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+"Impala Platinum,2025,E,Scope 1 GHG emissions,514541,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total direct CO2, t)""",,,,,,,,,
+"Impala Platinum,2025,E,Scope 2 GHG emissions,3895373,tCO2e,lower,Natural,Implats ESG Report 2025 (pdf),""p.101 (Total indirect CO2, t)""",,,,,,,,,
+"Impala Platinum,2025,E,Energy consumption,21961000,GJ,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Group energy, 000 GJ x1000)""",,,,,,,,,
+"Impala Platinum,2025,E,Water withdrawal,31084,ML,lower,Natural,Implats ESG Report 2025 (pdf),""p.100 (Total water withdrawn, Ml)""",,,,,,,,,
+"Impala Platinum,2025,E,Significant environmental incidents (level 3+),2,count,lower,Natural,Implats ESG Report 2025 (pdf),""p.63 (two level 3, none level 4/5)""",,,,,,,,,
+Impala Platinum,2025,S,Fatalities,8,count,lower,Human,Implats ESG Report 2025 (pdf),p.95 (Group total)
+"Impala Platinum,2025,S,Lost-time injury frequency rate (LTIFR),3.46,per million hours,lower,Human,Implats ESG Report 2025 (pdf),""p.97 (Group total, pmmhw)""",,,,,,,,,
+Impala Platinum,2025,S,Employees,,number,n/a,Human,,
+Impala Platinum,2025,S,Women in workforce,,%,higher,Human,,
+"Impala Platinum,2025,S,Training spend,865,R million,higher,Human,Implats ESG Report 2025 (pdf),""p.93 (skills development spend, SA operations only, Rm)""",,,,,,,,,
+Impala Platinum,2025,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Impala Platinum,2025,G,Independent directors on board,,%,higher,Social and relationship,,
+Impala Platinum,2025,G,Women on board,54,%,higher,Social and relationship,Implats ESG Report 2025 (pdf),p.30 (women representation on board)
+"Impala Platinum,2025,G,""ESG data externally assured (1 = yes, 0 = no)"",1,flag,higher,Social and relationship,Implats ESG Report 2025 (pdf),pp.81-83 (assurance report)",,,,,,,,,
+Sibanye-Stillwater,2021,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2021,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2021,E,Energy consumption,,GJ,lower,Natural,,
+Sibanye-Stillwater,2021,E,Water withdrawal,,ML,lower,Natural,,
+Sibanye-Stillwater,2021,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Sibanye-Stillwater,2021,S,Fatalities,,count,lower,Human,,
+Sibanye-Stillwater,2021,S,Lost-time injury frequency rate (LTIFR),,per million hours,lower,Human,,
+Sibanye-Stillwater,2021,S,Employees,,number,n/a,Human,,
+Sibanye-Stillwater,2021,S,Women in workforce,,%,higher,Human,,
+Sibanye-Stillwater,2021,S,Training spend,,R million,higher,Human,,
+Sibanye-Stillwater,2021,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Sibanye-Stillwater,2021,G,Independent directors on board,,%,higher,Social and relationship,,
+Sibanye-Stillwater,2021,G,Women on board,,%,higher,Social and relationship,,
+"Sibanye-Stillwater,2021,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Sibanye-Stillwater,2022,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2022,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2022,E,Energy consumption,,GJ,lower,Natural,,
+Sibanye-Stillwater,2022,E,Water withdrawal,,ML,lower,Natural,,
+Sibanye-Stillwater,2022,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Sibanye-Stillwater,2022,S,Fatalities,,count,lower,Human,,
+Sibanye-Stillwater,2022,S,Lost-time injury frequency rate (LTIFR),,per million hours,lower,Human,,
+Sibanye-Stillwater,2022,S,Employees,,number,n/a,Human,,
+Sibanye-Stillwater,2022,S,Women in workforce,,%,higher,Human,,
+Sibanye-Stillwater,2022,S,Training spend,,R million,higher,Human,,
+Sibanye-Stillwater,2022,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Sibanye-Stillwater,2022,G,Independent directors on board,,%,higher,Social and relationship,,
+Sibanye-Stillwater,2022,G,Women on board,,%,higher,Social and relationship,,
+"Sibanye-Stillwater,2022,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Sibanye-Stillwater,2023,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2023,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2023,E,Energy consumption,,GJ,lower,Natural,,
+Sibanye-Stillwater,2023,E,Water withdrawal,,ML,lower,Natural,,
+Sibanye-Stillwater,2023,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Sibanye-Stillwater,2023,S,Fatalities,,count,lower,Human,,
+Sibanye-Stillwater,2023,S,Lost-time injury frequency rate (LTIFR),,per million hours,lower,Human,,
+Sibanye-Stillwater,2023,S,Employees,,number,n/a,Human,,
+Sibanye-Stillwater,2023,S,Women in workforce,,%,higher,Human,,
+Sibanye-Stillwater,2023,S,Training spend,,R million,higher,Human,,
+Sibanye-Stillwater,2023,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Sibanye-Stillwater,2023,G,Independent directors on board,,%,higher,Social and relationship,,
+Sibanye-Stillwater,2023,G,Women on board,,%,higher,Social and relationship,,
+"Sibanye-Stillwater,2023,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Sibanye-Stillwater,2024,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2024,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2024,E,Energy consumption,,GJ,lower,Natural,,
+Sibanye-Stillwater,2024,E,Water withdrawal,,ML,lower,Natural,,
+Sibanye-Stillwater,2024,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Sibanye-Stillwater,2024,S,Fatalities,,count,lower,Human,,
+Sibanye-Stillwater,2024,S,Lost-time injury frequency rate (LTIFR),,per million hours,lower,Human,,
+Sibanye-Stillwater,2024,S,Employees,,number,n/a,Human,,
+Sibanye-Stillwater,2024,S,Women in workforce,,%,higher,Human,,
+Sibanye-Stillwater,2024,S,Training spend,,R million,higher,Human,,
+Sibanye-Stillwater,2024,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Sibanye-Stillwater,2024,G,Independent directors on board,,%,higher,Social and relationship,,
+Sibanye-Stillwater,2024,G,Women on board,,%,higher,Social and relationship,,
+"Sibanye-Stillwater,2024,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Sibanye-Stillwater,2025,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2025,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Sibanye-Stillwater,2025,E,Energy consumption,,GJ,lower,Natural,,
+Sibanye-Stillwater,2025,E,Water withdrawal,,ML,lower,Natural,,
+Sibanye-Stillwater,2025,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Sibanye-Stillwater,2025,S,Fatalities,,count,lower,Human,,
+Sibanye-Stillwater,2025,S,Lost-time injury frequency rate (LTIFR),,per million hours,lower,Human,,
+Sibanye-Stillwater,2025,S,Employees,,number,n/a,Human,,
+Sibanye-Stillwater,2025,S,Women in workforce,,%,higher,Human,,
+Sibanye-Stillwater,2025,S,Training spend,,R million,higher,Human,,
+Sibanye-Stillwater,2025,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Sibanye-Stillwater,2025,G,Independent directors on board,,%,higher,Social and relationship,,
+Sibanye-Stillwater,2025,G,Women on board,,%,higher,Social and relationship,,
+"Sibanye-Stillwater,2025,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Gold Fields,2021,E,Scope 1 GHG emissions,787000,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 49 (kt x1000)
+Gold Fields,2021,E,Scope 2 GHG emissions,927100,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 71 (kt x1000)
+Gold Fields,2021,E,Energy consumption,13904886,GJ,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Energy and carbon performance' row 42
+Gold Fields,2021,E,Water withdrawal,18532,ML,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Water' row 24 (GL x1000)
+Gold Fields,2021,E,Significant environmental incidents (level 3+),0,count,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Environment and compliance' row 20
+Gold Fields,2021,S,Fatalities,1,count,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 12
+Gold Fields,2021,S,Lost-time injury frequency rate (LTIFR),0.62,per million hours,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 21
+Gold Fields,2021,S,Employees,5957,number,n/a,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Training' row 20
+Gold Fields,2021,S,Women in workforce,,%,higher,Human,,
+Gold Fields,2021,S,Training spend,,R million,higher,Human,,
+Gold Fields,2021,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Gold Fields,2021,G,Independent directors on board,,%,higher,Social and relationship,,
+Gold Fields,2021,G,Women on board,,%,higher,Social and relationship,,
+"Gold Fields,2021,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Gold Fields,2022,E,Scope 1 GHG emissions,789000,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 49 (kt x1000)
+Gold Fields,2022,E,Scope 2 GHG emissions,927000,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 71 (kt x1000)
+Gold Fields,2022,E,Energy consumption,14103993,GJ,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Energy and carbon performance' row 42
+Gold Fields,2022,E,Water withdrawal,18300,ML,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Water' row 24 (GL x1000)
+Gold Fields,2022,E,Significant environmental incidents (level 3+),0,count,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Environment and compliance' row 20
+Gold Fields,2022,S,Fatalities,1,count,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 12
+Gold Fields,2022,S,Lost-time injury frequency rate (LTIFR),0.6,per million hours,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 21
+Gold Fields,2022,S,Employees,6364,number,n/a,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Training' row 20
+Gold Fields,2022,S,Women in workforce,23.3,%,higher,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Diversity and equal opportunity' row 98
+Gold Fields,2022,S,Training spend,,R million,higher,Human,,
+Gold Fields,2022,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Gold Fields,2022,G,Independent directors on board,,%,higher,Social and relationship,,
+Gold Fields,2022,G,Women on board,,%,higher,Social and relationship,,
+"Gold Fields,2022,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Gold Fields,2023,E,Scope 1 GHG emissions,778000,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 49 (kt x1000)
+Gold Fields,2023,E,Scope 2 GHG emissions,854000,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 71 (kt x1000)
+Gold Fields,2023,E,Energy consumption,14024691,GJ,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Energy and carbon performance' row 42
+Gold Fields,2023,E,Water withdrawal,18257,ML,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Water' row 24 (GL x1000)
+Gold Fields,2023,E,Significant environmental incidents (level 3+),0,count,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Environment and compliance' row 20
+Gold Fields,2023,S,Fatalities,2,count,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 12
+Gold Fields,2023,S,Lost-time injury frequency rate (LTIFR),0.62,per million hours,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 21
+Gold Fields,2023,S,Employees,6297,number,n/a,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Training' row 20
+Gold Fields,2023,S,Women in workforce,24.8,%,higher,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Diversity and equal opportunity' row 98
+Gold Fields,2023,S,Training spend,,R million,higher,Human,,
+Gold Fields,2023,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Gold Fields,2023,G,Independent directors on board,,%,higher,Social and relationship,,
+Gold Fields,2023,G,Women on board,,%,higher,Social and relationship,,
+"Gold Fields,2023,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Gold Fields,2024,E,Scope 1 GHG emissions,800700,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 49 (kt x1000)
+Gold Fields,2024,E,Scope 2 GHG emissions,832000,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 71 (kt x1000)
+Gold Fields,2024,E,Energy consumption,14353077,GJ,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Energy and carbon performance' row 42
+Gold Fields,2024,E,Water withdrawal,18108,ML,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Water' row 24 (GL x1000)
+Gold Fields,2024,E,Significant environmental incidents (level 3+),0,count,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Environment and compliance' row 20
+Gold Fields,2024,S,Fatalities,2,count,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 12
+Gold Fields,2024,S,Lost-time injury frequency rate (LTIFR),0.656,per million hours,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 21
+Gold Fields,2024,S,Employees,6357,number,n/a,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Training' row 20
+Gold Fields,2024,S,Women in workforce,25.3,%,higher,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Diversity and equal opportunity' row 98
+Gold Fields,2024,S,Training spend,,R million,higher,Human,,
+Gold Fields,2024,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Gold Fields,2024,G,Independent directors on board,,%,higher,Social and relationship,,
+Gold Fields,2024,G,Women on board,,%,higher,Social and relationship,,
+"Gold Fields,2024,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Gold Fields,2025,E,Scope 1 GHG emissions,901000,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 49 (kt x1000)
+Gold Fields,2025,E,Scope 2 GHG emissions,877000,tCO2e,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'GHG emissions' row 71 (kt x1000)
+Gold Fields,2025,E,Energy consumption,15704765,GJ,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Energy and carbon performance' row 42
+Gold Fields,2025,E,Water withdrawal,17786,ML,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Water' row 24 (GL x1000)
+Gold Fields,2025,E,Significant environmental incidents (level 3+),0,count,lower,Natural,Gold Fields 2025 ESG databook (xlsx),Sheet 'Environment and compliance' row 20
+Gold Fields,2025,S,Fatalities,0,count,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 12
+Gold Fields,2025,S,Lost-time injury frequency rate (LTIFR),0.52,per million hours,lower,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Safety (Group)' row 21
+Gold Fields,2025,S,Employees,6628,number,n/a,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Training' row 20
+Gold Fields,2025,S,Women in workforce,26.8,%,higher,Human,Gold Fields 2025 ESG databook (xlsx),Sheet 'Diversity and equal opportunity' row 98
+Gold Fields,2025,S,Training spend,,R million,higher,Human,,
+Gold Fields,2025,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Gold Fields,2025,G,Independent directors on board,,%,higher,Social and relationship,,
+Gold Fields,2025,G,Women on board,,%,higher,Social and relationship,,
+"Gold Fields,2025,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Exxaro Resources,2021,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2021,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2021,E,Energy consumption,,GJ,lower,Natural,,
+Exxaro Resources,2021,E,Water withdrawal,,ML,lower,Natural,,
+Exxaro Resources,2021,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Exxaro Resources,2021,S,Fatalities,,count,lower,Human,,
+Exxaro Resources,2021,S,Lost-time injury frequency rate (LTIFR),,per million hours,lower,Human,,
+Exxaro Resources,2021,S,Employees,,number,n/a,Human,,
+Exxaro Resources,2021,S,Women in workforce,,%,higher,Human,,
+Exxaro Resources,2021,S,Training spend,,R million,higher,Human,,
+Exxaro Resources,2021,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Exxaro Resources,2021,G,Independent directors on board,,%,higher,Social and relationship,,
+Exxaro Resources,2021,G,Women on board,,%,higher,Social and relationship,,
+"Exxaro Resources,2021,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Exxaro Resources,2022,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2022,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2022,E,Energy consumption,,GJ,lower,Natural,,
+Exxaro Resources,2022,E,Water withdrawal,,ML,lower,Natural,,
+Exxaro Resources,2022,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Exxaro Resources,2022,S,Fatalities,,count,lower,Human,,
+Exxaro Resources,2022,S,Lost-time injury frequency rate (LTIFR),,per million hours,lower,Human,,
+Exxaro Resources,2022,S,Employees,,number,n/a,Human,,
+Exxaro Resources,2022,S,Women in workforce,,%,higher,Human,,
+Exxaro Resources,2022,S,Training spend,,R million,higher,Human,,
+Exxaro Resources,2022,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Exxaro Resources,2022,G,Independent directors on board,,%,higher,Social and relationship,,
+Exxaro Resources,2022,G,Women on board,,%,higher,Social and relationship,,
+"Exxaro Resources,2022,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Exxaro Resources,2023,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2023,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2023,E,Energy consumption,,GJ,lower,Natural,,
+"Exxaro Resources,2023,E,Water withdrawal,8744,ML,lower,Natural,Exxaro 2025 ESG report (pdf),""p.52 (total water withdrawal, ML)""",,,,,,,,,
+Exxaro Resources,2023,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Exxaro Resources,2023,S,Fatalities,0,count,lower,Human,Exxaro 2025 ESG report (pdf),p.60
+"Exxaro Resources,2023,S,Lost-time injury frequency rate (LTIFR),0.35,per million hours,lower,Human,Exxaro 2025 ESG report (pdf),""p.60 (reported 0.04/0.06/0.07 per 200,000 h; x5 to per million h)""",,,,,,,,,
+"Exxaro Resources,2023,S,Employees,6797,number,n/a,Human,Exxaro 2025 ESG report (pdf),p.68 (permanent employees; contractors excluded)",,,,,,,,,
+Exxaro Resources,2023,S,Women in workforce,,%,higher,Human,,
+Exxaro Resources,2023,S,Training spend,,R million,higher,Human,,
+Exxaro Resources,2023,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Exxaro Resources,2023,G,Independent directors on board,,%,higher,Social and relationship,,
+Exxaro Resources,2023,G,Women on board,,%,higher,Social and relationship,,
+"Exxaro Resources,2023,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Exxaro Resources,2024,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2024,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2024,E,Energy consumption,5488093,GJ,lower,Natural,Exxaro 2025 ESG report (pdf),p.36
+"Exxaro Resources,2024,E,Water withdrawal,10342,ML,lower,Natural,Exxaro 2025 ESG report (pdf),""p.52 (total water withdrawal, ML)""",,,,,,,,,
+Exxaro Resources,2024,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Exxaro Resources,2024,S,Fatalities,0,count,lower,Human,Exxaro 2025 ESG report (pdf),p.60
+"Exxaro Resources,2024,S,Lost-time injury frequency rate (LTIFR),0.3,per million hours,lower,Human,Exxaro 2025 ESG report (pdf),""p.60 (reported 0.04/0.06/0.07 per 200,000 h; x5 to per million h)""",,,,,,,,,
+"Exxaro Resources,2024,S,Employees,6966,number,n/a,Human,Exxaro 2025 ESG report (pdf),p.68 (permanent employees; contractors excluded)",,,,,,,,,
+Exxaro Resources,2024,S,Women in workforce,,%,higher,Human,,
+"Exxaro Resources,2024,S,Training spend,402,R million,higher,Human,Exxaro 2025 ESG report (pdf),""p.74 (people development spend, R million)""",,,,,,,,,
+Exxaro Resources,2024,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Exxaro Resources,2024,G,Independent directors on board,,%,higher,Social and relationship,,
+Exxaro Resources,2024,G,Women on board,,%,higher,Social and relationship,,
+"Exxaro Resources,2024,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
+Exxaro Resources,2025,E,Scope 1 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2025,E,Scope 2 GHG emissions,,tCO2e,lower,Natural,,
+Exxaro Resources,2025,E,Energy consumption,5529435,GJ,lower,Natural,Exxaro 2025 ESG report (pdf),p.36
+"Exxaro Resources,2025,E,Water withdrawal,10385,ML,lower,Natural,Exxaro 2025 ESG report (pdf),""p.52 (total water withdrawal, ML)""",,,,,,,,,
+Exxaro Resources,2025,E,Significant environmental incidents (level 3+),,count,lower,Natural,,
+Exxaro Resources,2025,S,Fatalities,0,count,lower,Human,Exxaro 2025 ESG report (pdf),p.60
+"Exxaro Resources,2025,S,Lost-time injury frequency rate (LTIFR),0.2,per million hours,lower,Human,Exxaro 2025 ESG report (pdf),""p.60 (reported 0.04/0.06/0.07 per 200,000 h; x5 to per million h)""",,,,,,,,,
+"Exxaro Resources,2025,S,Employees,6742,number,n/a,Human,Exxaro 2025 ESG report (pdf),p.68 (permanent employees; contractors excluded)",,,,,,,,,
+Exxaro Resources,2025,S,Women in workforce,,%,higher,Human,,
+"Exxaro Resources,2025,S,Training spend,399,R million,higher,Human,Exxaro 2025 ESG report (pdf),""p.74 (people development spend, R million)""",,,,,,,,,
+Exxaro Resources,2025,S,Socio-economic development spend,,R million,higher,Social and relationship,,
+Exxaro Resources,2025,G,Independent directors on board,,%,higher,Social and relationship,,
+Exxaro Resources,2025,G,Women on board,,%,higher,Social and relationship,,
+"Exxaro Resources,2025,G,""ESG data externally assured (1 = yes, 0 = no)"",,flag,higher,Social and relationship,,",,,,,,,,,
