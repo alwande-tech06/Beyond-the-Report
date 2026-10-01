@@ -15,9 +15,12 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from scipy.cluster.hierarchy import fcluster, linkage
+from scipy.stats import linregress
 
 import esgrq as Q
 import loader as L
+import nlp as NLP
 
 APP_DIR = Path(__file__).parent
 ESG_FILE = APP_DIR / "data" / "esg_data.csv"
@@ -209,7 +212,7 @@ st.sidebar.markdown(
 )
 
 PAGES = ["Overview", "Reporting quality", "Trends", "Peer benchmark", "Risk scorecard", "ESG indicators",
-         "Relationships", "Company profile", "Data and quality", "Test the dashboard"]
+         "Relationships", "Advanced analytics", "Company profile", "Data and quality", "Test the dashboard"]
 page = st.sidebar.radio("Go to", PAGES, label_visibility="collapsed")
 
 st.sidebar.divider()
@@ -340,10 +343,11 @@ BAND_CLS = {"Strong": "low", "Moderate": "mod", "Weak": "high"}
 SEQ = [[0, "#FAD7A0"], [0.5, "#EEF1F5"], [1, "#6E9CC8"]]
 
 
-def heat(z: pd.DataFrame, text: pd.DataFrame | None = None, zmax: float = 100, height: int = 300) -> go.Figure:
+def heat(z: pd.DataFrame, text: pd.DataFrame | None = None, zmax: float = 100, height: int = 300,
+         scale: list | None = None) -> go.Figure:
     t = text if text is not None else z.round(0).map(lambda v: "" if pd.isna(v) else f"{v:.0f}")
     fig = go.Figure(go.Heatmap(z=z.values, x=list(z.columns), y=list(z.index), zmin=0, zmax=zmax, text=t.values,
-                               texttemplate="%{text}", colorscale=SEQ, showscale=False, xgap=2, ygap=2,
+                               texttemplate="%{text}", colorscale=scale or SEQ, showscale=False, xgap=2, ygap=2,
                                hoverongaps=False))
     fig.update_yaxes(autorange="reversed")
     fig.update_xaxes(side="top")
@@ -991,8 +995,574 @@ def page_test():
             st.dataframe(fb, hide_index=True, width="stretch")
 
 
+# --------------------------------------------------------------------------------------
+# Advanced analytics
+# --------------------------------------------------------------------------------------
+KEYS = ["company", "fiscal_year"]
+S1, S2, EN, WA = "Scope 1 GHG emissions", "Scope 2 GHG emissions", "Energy consumption", "Water withdrawal"
+LT, FA, WO, EMP = "Lost-time injury frequency rate (LTIFR)", "Fatalities", "Women in workforce", "Employees"
+
+# variables that are not in the financial data dictionary: label, format, better when
+ADV = {
+    "Composite": ("Risk score (100 = lowest risk)", "{:.0f}", "higher"),
+    "ESG": ("ESG performance score (0–100)", "{:.0f}", "higher"),
+    "ESGRQ": ("Reporting quality, ESGRQ (0–100)", "{:.0f}", "higher"),
+    "ghg_intensity": ("GHG intensity (t CO2e per R million revenue)", "{:,.1f}", "lower"),
+    "energy_intensity": ("Energy intensity (GJ per R million revenue)", "{:,.0f}", "lower"),
+    "ghg_change": ("Scope 1+2 change since first reported year", "{:+.1f}%", "lower"),
+    LT: ("LTIFR (per million hours)", "{:.2f}", "lower"),
+    FA: ("Fatalities", "{:.0f}", "lower"),
+    WO: ("Women in workforce", "{:.1f}%", "higher"),
+}
+GROUP_NAMES = {2: ["Stronger profile", "Weaker profile"],
+               3: ["Stronger profile", "Middle profile", "Weaker profile"],
+               4: ["Strongest profile", "Upper-middle profile", "Lower-middle profile", "Weakest profile"]}
+GROUP_COLOURS = {2: [NAVY, ORANGE], 3: [NAVY, "#8C98A4", ORANGE], 4: [NAVY, "#5DA9E9", "#8C98A4", ORANGE]}
+
+
+def adv_label(v: str) -> str:
+    return ADV[v][0] if v in ADV else L.LABELS.get(v, v)
+
+
+def adv_fmt(v: str, x) -> str:
+    if pd.isna(x):
+        return "–"
+    return ADV[v][1].format(x) if v in ADV else fmt_metric(v, x)
+
+
+def adv_better(v: str) -> str:
+    return ADV[v][2] if v in ADV else L.DICT_DF.set_index("variable").better_when.get(v, "higher")
+
+
+@st.cache_data(show_spinner="Reading the report...")
+def scan_pdf(raw: bytes) -> pd.DataFrame:
+    return NLP.theme_counts(NLP.extract_pages(raw))
+
+
+def adv_panel() -> pd.DataFrame:
+    """One row per company-year: ratios, risk score, ESG indicators and the ESG ratios derived from them."""
+    p = wide.merge(score[KEYS + ["Composite"] + (["ESG"] if "ESG" in score else [])], on=KEYS, how="left")
+    if "ESG" not in p:
+        p["ESG"] = np.nan
+    if not esg.empty:
+        e = esg.pivot_table(index=KEYS, columns="indicator", values="value", aggfunc="first").reset_index()
+        e.columns.name = None
+        p = p.merge(e, on=KEYS, how="left")
+    for c in (S1, S2, EN, WA, LT, FA, WO, EMP):
+        if c not in p:
+            p[c] = np.nan
+    # intensities always use rand revenue so Gold Fields is comparable whatever the sidebar toggle says
+    rand = get_wide(tuple(sorted(fx.items())))[KEYS + ["revenue"]].rename(columns={"revenue": "revenue_zar"})
+    p = p.merge(rand, on=KEYS, how="left")
+    p["ghg_total"] = p[S1] + p[S2]
+    p["ghg_intensity"] = p.ghg_total / p.revenue_zar
+    p["energy_intensity"] = p[EN] / p.revenue_zar
+    first = p.dropna(subset=["ghg_total"]).sort_values("fiscal_year").groupby("company").ghg_total.first()
+    p["ghg_change"] = (p.ghg_total / p.company.map(first) - 1) * 100
+    return p.sort_values(KEYS).reset_index(drop=True)
+
+
+def esgrq_latest():
+    """(workbook sheets, report year, composite table indexed by company) or (None, None, None)."""
+    data = get_esgrq()
+    if data is None or data["Coding"].report_year.dropna().empty:
+        return None, None, None
+    ry = int(data["Coding"].report_year.dropna().max())
+    comp = Q.composite(data["Coding"][data["Coding"].report_year == ry])
+    return data, ry, comp.set_index("company")
+
+
+def adv_anomalies(p: pd.DataFrame, cut: float) -> pd.DataFrame:
+    rows = []
+
+    def add(r, metric, value, signal, kind):
+        rows.append(dict(Company=r.company, Year=int(r.fiscal_year), Metric=metric, Value=value, Signal=signal, Type=kind))
+
+    # 1. robust z-score: distance from the sample median in units of the median absolute deviation
+    for v in ["net_margin", "roe", "current_ratio", "debt_to_equity", "interest_cover", "fcf_margin",
+              "revenue_growth", "ghg_intensity", "energy_intensity", LT]:
+        s = p[v].dropna()
+        if len(s) < 5:
+            continue
+        med = s.median()
+        mad = (s - med).abs().median()
+        if not mad:
+            continue
+        z = 0.6745 * (p[v] - med) / mad
+        for i in z[z.abs() >= cut].index:
+            add(p.loc[i], adv_label(v), adv_fmt(v, p.at[i, v]),
+                f"Robust z = {z[i]:+.1f}; sample median {adv_fmt(v, med)}", "Statistical outlier")
+
+    # 2. business rules
+    for _, r in p.iterrows():
+        if r.net_profit < 0:
+            add(r, "Net profit", f"{r.net_profit:,.0f} million", "Loss for the year", "Business rule")
+        if pd.notna(r.interest_cover) and r.interest_cover < 1.5:
+            add(r, L.LABELS["interest_cover"], fmt_metric("interest_cover", r.interest_cover),
+                "Earnings cover interest less than 1.5 times", "Business rule")
+        if pd.notna(r.current_ratio) and r.current_ratio < 1:
+            add(r, L.LABELS["current_ratio"], fmt_metric("current_ratio", r.current_ratio),
+                "Current liabilities exceed current assets", "Business rule")
+        if pd.notna(r.free_cash_flow) and r.dividends_paid > 0 and r.dividends_paid > r.free_cash_flow:
+            add(r, "Dividends against free cash flow", f"{r.dividends_paid:,.0f} vs {r.free_cash_flow:,.0f} million",
+                "Dividends paid exceed free cash flow", "Business rule")
+
+    # 3. ESG values that jump between years: often a boundary change or a capture error
+    for ind in (S1, S2, EN, WA, EMP):
+        chg = p.groupby("company")[ind].pct_change(fill_method=None) * 100
+        for i in chg[chg.abs() >= 40].index:
+            add(p.loc[i], ind, f"{p.at[i, ind]:,.0f}", f"{chg[i]:+.0f}% on the previous year: check boundary and capture",
+                "ESG movement")
+
+    # 4. capture problems already found by the data-quality checks
+    qc = L.quality_checks(wide_all, long_df)
+    for r in qc[(qc.severity == "High") & qc.company.isin(companies)].itertuples():
+        rows.append(dict(Company=r.company, Year=int(r.fiscal_year) if pd.notna(r.fiscal_year) else None,
+                         Metric=r.check, Value="", Signal=r.detail, Type="Data capture check"))
+
+    out = pd.DataFrame(rows, columns=["Company", "Year", "Metric", "Value", "Signal", "Type"])
+    return out.sort_values(["Company", "Year", "Type"]).reset_index(drop=True)
+
+
+def adv_insights(p: pd.DataFrame, comp, data, ry, anomalies: pd.DataFrame, themes: pd.DataFrame) -> list[tuple[str, bool]]:
+    out = []
+    order = [c for c in COMPANY_ORDER if c in companies]
+    if comp is not None:
+        q = comp.reindex(order).ESGRQ.dropna()
+        if len(q) >= 2:
+            out.append((f"<b>{q.idxmax()}</b> has the highest ESG reporting quality in the {ry} reports "
+                        f"(ESGRQ {q.max():.0f}/100) and <b>{q.idxmin()}</b> the lowest ({q.min():.0f}/100).", False))
+        _, cscore = Q.comparability(data["Comparability"][data["Comparability"].report_year == ry], order)
+        if cscore is not None:
+            share = "None" if cscore < 0.5 else f"Only <b>{cscore:.0f}%</b>" if cscore < 50 else f"<b>{cscore:.0f}%</b>"
+            out.append((f"{share} of the common ESG indicators meet every comparability criterion (same unit, "
+                        "boundary and period), so ESG figures cannot be compared across the companies without "
+                        "adjustment." if cscore < 50 else
+                        f"{share} of the common ESG indicators meet every comparability criterion (same unit, "
+                        "boundary and period).", cscore < 50))
+        lv = data["Assurance"][data["Assurance"].company.isin(order)]
+        limited = lv[lv.level.fillna("").str.lower().str.startswith("limited")].company.tolist()
+        if limited:
+            out.append((f"<b>{', '.join(limited)}</b> obtained limited assurance only over ESG data, the weakest level "
+                        "in the sample. Treat those disclosures with more caution.", True))
+    m = p[["ESG", "roe"]].dropna()
+    if len(m) >= 5:
+        r = m.ESG.corr(m.roe)
+        word = "positive" if r > 0.3 else "negative" if r < -0.3 else "weak"
+        out.append((f"ESG performance and return on equity show a <b>{word}</b> association across {len(m)} "
+                    f"company-years (r = {r:.2f}). This is descriptive: the sample is too small to claim cause.", False))
+    if not anomalies.empty:
+        top = anomalies.Company.value_counts()
+        out.append((f"<b>{len(anomalies)}</b> observations are flagged as unusual; <b>{top.index[0]}</b> has the most "
+                    f"({top.iloc[0]}). See the Anomaly detection tab for each one.", True))
+    if not esg.empty:
+        n = esg[esg.company.isin(order)].groupby("company").size().reindex(order).fillna(0)
+        if n.min() < n.max() * 0.5:
+            out.append((f"<b>{n.idxmin()}</b> has only {n.min():.0f} ESG indicator values captured, against "
+                        f"{n.max():.0f} for {n.idxmax()}. Its ESG charts and ESG score rest on thin data.", True))
+    if not themes.empty:
+        t = themes[themes.company.isin(order)].pivot_table(index="company", columns="theme", values="mentions")
+        if {"Commitment language", "Performance language"} <= set(t.columns):
+            ratio = (t["Commitment language"] / t["Performance language"]).dropna()
+            if len(ratio) >= 2:
+                out.append((f"<b>{ratio.idxmax()}</b>'s report uses the most forward-looking language relative to "
+                            f"performance language ({ratio.max():.1f} commitment words per performance word; "
+                            f"{ratio.idxmin()} is lowest at {ratio.min():.1f}).", False))
+    return out
+
+
+def trace_table(data, themes: pd.DataFrame) -> pd.DataFrame:
+    """Every value the dashboard uses, with the document and the place in it that the value came from."""
+    cols = ["Dataset", "Company", "Year", "Item", "Value", "Unit", "Source document", "Location in source"]
+    parts = []
+    f = long_df[long_df.company.isin(companies)]
+    page = f.report_page.fillna("").astype(str).str.strip()
+    parts.append(pd.DataFrame({
+        "Dataset": "Financial statement line", "Company": f.company, "Year": f.fiscal_year,
+        "Item": f.variable.map(L.LABELS), "Value": f.value_m.map(lambda v: f"{v:,.1f}"),
+        "Unit": f.currency + " million", "Source document": f.source_file,
+        "Location in source": f.source_lines + page.map(lambda s: f"; report p.{s}" if s else ""),
+    }))
+    if not esg.empty:
+        e = esg[esg.company.isin(companies)]
+        parts.append(pd.DataFrame({
+            "Dataset": "ESG indicator", "Company": e.company, "Year": e.fiscal_year, "Item": e.indicator,
+            "Value": e.value.map(lambda v: f"{v:,.2f}".rstrip("0").rstrip(".")), "Unit": e.unit,
+            "Source document": e.source_document, "Location in source": e.report_page,
+        }))
+    if data is not None:
+        c = data["Coding"]
+        c = c[c.company.isin(companies) & c.score.notna()]
+        parts.append(pd.DataFrame({
+            "Dataset": "Reporting quality score", "Company": c.company, "Year": c.report_year,
+            "Item": c.code + " " + c.indicator, "Value": c.score.map(lambda v: f"{v:.0f}"), "Unit": "score 0–4",
+            "Source document": c.source_document, "Location in source": c.report_page.map(lambda s: f"p.{s}" if s else ""),
+        }))
+    if not themes.empty:
+        t = themes[themes.company.isin(companies)]
+        parts.append(pd.DataFrame({
+            "Dataset": "Report text theme", "Company": t.company, "Year": 2025, "Item": t.theme,
+            "Value": t.mentions.map(lambda v: f"{v:,.0f}"), "Unit": "mentions", "Source document": t.source_document,
+            "Location in source": t.example_page.map(lambda v: f"example on PDF p.{v:.0f}" if pd.notna(v) else ""),
+        }))
+    out = pd.concat(parts, ignore_index=True)[cols]
+    for c in ("Source document", "Location in source"):
+        out[c] = out[c].fillna("").astype(str).str.strip()
+    return out
+
+
+def full_dictionary() -> pd.DataFrame:
+    cols = ["Variable", "Type", "Unit / measurement", "Definition", "Better when"]
+    fin = pd.DataFrame({"Variable": L.DICT_DF.label, "Type": "Financial: " + L.DICT_DF.type.str.lower(),
+                        "Unit / measurement": L.DICT_DF.unit, "Definition": L.DICT_DF.definition,
+                        "Better when": L.DICT_DF.better_when})
+    t = esg_template().drop_duplicates("indicator")
+    pillar = {"E": "Environmental", "S": "Social", "G": "Governance"}
+    ind = pd.DataFrame({"Variable": t.indicator, "Type": "ESG indicator (" + t.pillar.map(pillar) + ")",
+                        "Unit / measurement": t.unit,
+                        "Definition": "Captured from the company's ESG or sustainability report; " + t.capital + " capital.",
+                        "Better when": t.better_when})
+    q = pd.DataFrame({"Variable": Q.ITEM_TABLE.code + " " + Q.ITEM_TABLE.indicator,
+                      "Type": "Reporting quality item (" + Q.ITEM_TABLE.dimension + ")",
+                      "Unit / measurement": "Score 0–4",
+                      "Definition": "Evidence required: " + Q.ITEM_TABLE.evidence_required, "Better when": "higher"})
+    derived = pd.DataFrame([
+        ("Risk score", "Constructed index", "0–100", "Weighted mean of the pillar scores (profitability, liquidity, solvency, cash generation, stability and, if weighted, ESG). 100 = lowest risk in the sample.", "higher"),
+        ("ESG performance score", "Constructed index", "0–100", "Average of the ESG indicators after scaling each one 0–100 across the sample, direction taken into account.", "higher"),
+        ("ESGRQ", "Constructed index", "0–100", "ESG Reporting Quality: equal-weighted mean of the six dimension scores, each = mean item score ÷ 4 × 100.", "higher"),
+        ("GHG intensity", "Calculated ratio", "t CO2e per R million revenue", "(Scope 1 + Scope 2 emissions) ÷ revenue in rand.", "lower"),
+        ("Energy intensity", "Calculated ratio", "GJ per R million revenue", "Energy consumption ÷ revenue in rand.", "lower"),
+        ("Scope 1+2 change since first reported year", "Calculated", "%", "Scope 1 + 2 emissions against the earliest year captured for that company.", "lower"),
+        ("Anomaly flag", "Analytical flag", "Robust z-score / rule", "Value at least the chosen number of robust z-scores (0.6745 × distance from median ÷ median absolute deviation) from the sample median, or one that breaks a business rule.", "n/a"),
+        ("Benchmark position", "Analytical flag", "Above / below peer average", "Company value against the mean of the selected peers for the selected year, direction taken into account.", "n/a"),
+        ("Regression slope, intercept, R²", "Statistic", "Numeric", "Ordinary least squares fit of one variable on another across company-years; p-value from a two-sided t-test.", "n/a"),
+        ("Profile group", "Analytical grouping", "Category", "Group from Ward hierarchical clustering of standardised net margin, ROE, current ratio, debt/equity and FCF margin.", "n/a"),
+        ("Report text theme", "Text analytics", "Mentions per 100 pages", "Count of theme keywords in the report text, with one example sentence and its PDF page.", "n/a"),
+    ], columns=cols)
+    return pd.concat([fin, ind, q, derived], ignore_index=True)[cols]
+
+
+def page_advanced():
+    st.title("Advanced analytics")
+    st.markdown(
+        '<p class="lede">Multi-year ratios, anomaly detection, benchmarking, comparison, regression, report-text '
+        "analysis, clustering, scoring and descriptive statistics on the group's captured data, followed by the "
+        "insight summary, the traceable dataset and the data dictionary.</p>", unsafe_allow_html=True)
+
+    p = adv_panel()
+    order = [c for c in COMPANY_ORDER if c in companies]
+    data, ry, comp = esgrq_latest()
+    themes = NLP.load()
+    now = p[p.fiscal_year == year].set_index("company").reindex(order)
+    now["ESGRQ"] = comp.ESGRQ.reindex(order) if comp is not None else np.nan
+
+    tabs = st.tabs(["Ratios & years", "Anomaly detection", "Benchmarking", "Comparative analysis",
+                    "Correlation & regression", "Natural language processing", "Clustering", "Scoring index",
+                    "Descriptive analysis", "Data visualisation"])
+
+    # ---- Ratios & years --------------------------------------------------------------
+    with tabs[0]:
+        k = st.columns(4)
+        yrs = sorted(p.fiscal_year.unique())
+        k[0].metric("Years covered", len(yrs), f"FY{yrs[0]}–FY{yrs[-1]}", delta_color="off")
+        k[1].metric("Companies", len(order))
+        k[2].metric("Company-years", len(p))
+        k[3].metric("ESG values captured", 0 if esg.empty else int(esg.company.isin(companies).sum()))
+        show = ["net_margin", "roe", "revenue_growth", "current_ratio", "debt_to_equity", "fcf_margin",
+                "ghg_intensity", "ghg_change", LT]
+        t = p[KEYS].rename(columns={"company": "Company", "fiscal_year": "Year"})
+        for v in show:
+            t[adv_label(v)] = p[v].map(lambda x, v=v: adv_fmt(v, x))
+        st.dataframe(t, hide_index=True, width="stretch", height=420)
+        st.caption("Financial ratios come from the financial-statement workbooks. GHG intensity and LTIFR come from "
+                   "the ESG indicators; a dash means the value has not been captured for that year.")
+
+    # ---- Anomaly detection -----------------------------------------------------------
+    with tabs[1]:
+        c1, c2 = st.columns([3, 1])
+        cut = c1.slider("Sensitivity: flag values this many robust z-scores from the sample median", 2.5, 5.0, 3.5, 0.5,
+                        help="3.5 is the usual cut-off for the median-based z-score. Lower flags more observations.")
+        anomalies = adv_anomalies(p, cut)
+        c2.metric("Flagged observations", len(anomalies))
+        if anomalies.empty:
+            st.success("Nothing unusual at this sensitivity.")
+        else:
+            st.dataframe(anomalies, hide_index=True, width="stretch", height=420,
+                         column_config={"Year": st.column_config.NumberColumn(format="%d")})
+            by = anomalies.groupby(["Company", "Type"]).size().reset_index(name="Flags")
+            fig = px.bar(by, x="Company", y="Flags", color="Type", category_orders={"Company": order},
+                         color_discrete_sequence=[NAVY, ORANGE, "#5DA9E9", "#8C98A4"], labels={"Company": ""})
+            st.plotly_chart(style_fig(fig, 320), width="stretch")
+        st.caption("A flag is a prompt to look at the report, not proof of an error. Statistical outliers use the "
+                   "median and median absolute deviation, which a few extreme years cannot distort.")
+
+    # ---- Benchmarking ----------------------------------------------------------------
+    with tabs[2]:
+        bench = [v for v in ["Composite", "net_margin", "roe", "current_ratio", "debt_to_equity", "fcf_margin",
+                             "ESGRQ", "ghg_intensity", LT] if now[v].notna().sum() >= 2]
+        if not bench:
+            st.info("Benchmarking needs at least two selected companies with data for the year.")
+        else:
+            avg = now[bench].mean()
+            t = pd.DataFrame(index=order)
+            above = pd.Series(0, index=order)
+            for v in bench:
+                t[adv_label(v)] = now[v].map(lambda x, v=v: adv_fmt(v, x))
+                ahead = now[v] < avg[v] if adv_better(v) == "lower" else now[v] > avg[v]
+                above += ahead.fillna(False).astype(int)
+            counted = now[bench].notna().sum(axis=1)
+            t["Better than peer average"] = [f"{a} of {n}" for a, n in zip(above, counted)]
+            t.loc["Peer average"] = [adv_fmt(v, avg[v]) for v in bench] + [""]
+            t.index.name = "Company"
+            st.dataframe(t, width="stretch")
+            var = st.selectbox("Chart a measure against the peer average", bench, format_func=adv_label, key="adv_bench")
+            d = now[[var]].dropna().reset_index()
+            fig = px.bar(d, x="company", y=var, color="company", color_discrete_map=COLOURS,
+                         text=d[var].map(lambda x: adv_fmt(var, x)), labels={"company": "", var: adv_label(var)})
+            fig.add_hline(y=avg[var], line_dash="dot", line_color="#1E2328",
+                          annotation_text=f"Peer average {adv_fmt(var, avg[var])}", annotation_position="top left")
+            st.plotly_chart(style_fig(fig, 360, legend=False), width="stretch")
+            st.caption(f"FY{year}, selected companies. For {adv_label(var).lower()}, {adv_better(var)} is better. "
+                       "ESGRQ is scored on the 2025 reports whichever year is selected.")
+
+    # ---- Comparative analysis --------------------------------------------------------
+    with tabs[3]:
+        t = pd.DataFrame(index=order)
+        t["Risk band"] = cur_sc["Risk band"].reindex(order).astype(str).replace("nan", "–")
+        for v in ["Composite", "ESGRQ", "roe", "net_margin", "debt_to_equity", "ghg_intensity", LT, FA, WO]:
+            t[adv_label(v)] = now[v].map(lambda x, v=v: adv_fmt(v, x))
+        if data is not None:
+            a = data["Assurance"].drop_duplicates("company").set_index("company")
+            t["ESG assurance level"] = a.level.reindex(order).fillna("–")
+            t["Assurance provider"] = a.provider.reindex(order).fillna("–")
+        t.index.name = "Company"
+        st.dataframe(t.T, width="stretch", height=460)
+        st.caption(f"FY{year} side by side: financial risk, reporting quality, ESG performance and assurance. "
+                   "Assurance and ESGRQ refer to the 2025 reports.")
+
+    # ---- Correlation & regression ----------------------------------------------------
+    with tabs[4]:
+        reg = [v for v in ["ESG", "Composite", "net_margin", "roe", "roa", "current_ratio", "debt_to_equity",
+                           "interest_cover", "fcf_margin", "capex_intensity", "revenue_growth", "ghg_intensity",
+                           "energy_intensity", LT, FA, WO] if p[v].notna().sum() >= 3]
+        c1, c2 = st.columns(2)
+        xv = c1.selectbox("Explanatory variable (x)", reg, index=reg.index("ESG") if "ESG" in reg else 0,
+                          format_func=adv_label, key="adv_x")
+        yv = c2.selectbox("Outcome variable (y)", reg, index=reg.index("roe"), format_func=adv_label, key="adv_y")
+        m = p[KEYS + [xv, yv]].dropna() if xv != yv else pd.DataFrame()
+        if len(m) < 3 or m[xv].nunique() < 2:
+            st.info("Choose two different variables with at least three company-years in common.")
+        else:
+            fit = linregress(m[xv], m[yv])
+            k = st.columns(5)
+            k[0].metric("Correlation (r)", f"{fit.rvalue:+.3f}")
+            k[1].metric("R²", f"{fit.rvalue ** 2:.3f}")
+            k[2].metric("Slope", f"{fit.slope:,.3f}")
+            k[3].metric("Intercept", f"{fit.intercept:,.2f}")
+            k[4].metric("p-value", f"{fit.pvalue:.3f}", f"n = {len(m)}", delta_color="off")
+            fig = px.scatter(m, x=xv, y=yv, color="company", color_discrete_map=COLOURS, text="fiscal_year",
+                             category_orders={"company": COMPANY_ORDER}, labels={xv: adv_label(xv), yv: adv_label(yv)})
+            fig.update_traces(textposition="top center", marker=dict(size=11))
+            xs = np.linspace(m[xv].min(), m[xv].max(), 20)
+            fig.add_trace(go.Scatter(x=xs, y=fit.intercept + fit.slope * xs, mode="lines", name="OLS regression line",
+                                     line=dict(color="#1E2328", dash="dot")))
+            st.plotly_chart(style_fig(fig, 440), width="stretch")
+            sig = "statistically significant at the 5% level" if fit.pvalue < 0.05 else "not statistically significant at the 5% level"
+            st.markdown(f'<div class="insight"><b>Regression equation:</b> {adv_label(yv)} = {fit.intercept:,.2f} + '
+                        f"({fit.slope:,.3f} × {adv_label(xv)}). The fit explains {fit.rvalue ** 2 * 100:.0f}% of the "
+                        f"variation and is {sig}.</div>", unsafe_allow_html=True)
+            st.caption("Pooled ordinary least squares across company-years. Observations from the same company are not "
+                       "independent and the sample is small, so read this as association, not causation.")
+
+    # ---- Natural language processing -------------------------------------------------
+    with tabs[5]:
+        th = themes[themes.company.isin(companies)] if not themes.empty else themes
+        if th.empty:
+            st.info("No report text has been scanned yet. Run `python nlp.py` with the report PDFs in the folder above "
+                    "the app, or upload a report below.")
+        else:
+            st.caption("The five 2025 ESG and sustainability reports were read page by page. Each theme is a set of "
+                       "keywords; the number is mentions per 100 pages so long and short reports can be compared.")
+            topic = th[th.group == "Topic"].pivot_table(index="theme", columns="company", values="per_100_pages")
+            topic = topic.reindex(index=[t for t, (g, _) in NLP.THEMES.items() if g == "Topic"], columns=order)
+            st.plotly_chart(heat(topic, zmax=float(np.nanmax(topic.values)), height=440,
+                                 scale=[[0, "#F4F7FA"], [1, NAVY]]), width="stretch")
+
+            st.subheader("Commitment, performance and risk language")
+            lang = th[th.group == "Language"]
+            fig = px.bar(lang, x="company", y="per_10k_words", color="theme", barmode="group",
+                         category_orders={"company": order}, color_discrete_sequence=[ORANGE, NAVY, "#8C98A4"],
+                         labels={"company": "", "per_10k_words": "Mentions per 10,000 words"})
+            st.plotly_chart(style_fig(fig, 340), width="stretch")
+            piv = lang.pivot_table(index="company", columns="theme", values="mentions").reindex(order)
+            ratio = piv["Commitment language"] / piv["Performance language"]
+            st.caption("Commitment words per performance word: "
+                       + " · ".join(f"{c} {v:.1f}" for c, v in ratio.dropna().items())
+                       + ". A report that promises far more than it reports on is worth a closer look at whether the "
+                         "targets are backed by numbers.")
+
+            st.subheader("Evidence")
+            pick = st.selectbox("Theme", list(NLP.THEMES), key="adv_theme")
+            ev = th[th.theme == pick].set_index("company").reindex(order).reset_index()
+            st.dataframe(pd.DataFrame({
+                "Company": ev.company, "Mentions": ev.mentions, "Pages mentioning it": ev.pages_mentioning,
+                "Report pages": ev.report_pages, "Example page (PDF)": ev.example_page, "Example": ev.example,
+                "Source": ev.source_document}), hide_index=True, width="stretch")
+
+        with st.expander("Scan another report (PDF)"):
+            up = st.file_uploader("Report PDF with selectable text", type="pdf", key="adv_pdf")
+            if up is not None:
+                try:
+                    res = scan_pdf(up.getvalue())
+                    st.success(f"Read {res.report_pages.iloc[0]} pages and {res.report_words.iloc[0]:,} words from {up.name}.")
+                    st.dataframe(res[["theme", "group", "mentions", "pages_mentioning", "per_100_pages",
+                                      "example_page", "example"]], hide_index=True, width="stretch")
+                except Exception as e:  # noqa: BLE001
+                    st.error(f"Could not read this PDF: {e}. Scanned, image-only reports need OCR first.")
+        st.caption("Keyword counts show what a report talks about, not how well the company performs. They support "
+                   "the coded reporting-quality scores; they do not replace them.")
+
+    # ---- Clustering ------------------------------------------------------------------
+    with tabs[6]:
+        feats = ["net_margin", "roe", "current_ratio", "debt_to_equity", "fcf_margin"]
+        d = p.dropna(subset=feats).copy()
+        if len(d) < 6:
+            st.info("Clustering needs at least six company-years with complete ratios.")
+        else:
+            kk = st.radio("Number of groups", [2, 3, 4], index=1, horizontal=True, key="adv_k")
+            X = d[feats].copy()
+            for v in feats:  # limit extreme years so one loss-making year does not define the groups
+                X[v] = X[v].clip(*L.CAPS[v]) if v in L.CAPS else X[v].clip(X[v].quantile(0.05), X[v].quantile(0.95))
+            Z = (X - X.mean()) / X.std(ddof=0).replace(0, 1)
+            d["g"] = fcluster(linkage(Z.values, "ward"), kk, "maxclust")
+            rank = d.groupby("g").Composite.mean().sort_values(ascending=False).index.tolist()
+            names = GROUP_NAMES[kk][:len(rank)]
+            d["Group"] = d.g.map(dict(zip(rank, names)))
+            U, S, _ = np.linalg.svd(Z.values, full_matrices=False)
+            d["pc1"], d["pc2"] = U[:, 0] * S[0], U[:, 1] * S[1]
+            share = S ** 2 / (S ** 2).sum()
+            d["label"] = d.company.map(lambda c: L.COMPANIES[c]["ticker"]) + " " + d.fiscal_year.astype(str).str[-2:]
+
+            cols = st.columns(len(names))
+            for col, name in zip(cols, names):
+                g = d[d.Group == name]
+                members = "<br>".join(f"<b>{c}</b>: " + ", ".join(f"FY{y}" for y in sorted(gg.fiscal_year))
+                                      for c, gg in g.groupby("company", sort=False))
+                col.markdown(f'<div class="insight"><b>{name}</b> · {len(g)} company-years<br>'
+                             f'<small>{members}</small></div>', unsafe_allow_html=True)
+            fig = px.scatter(d, x="pc1", y="pc2", color="Group", text="label", category_orders={"Group": names},
+                             color_discrete_sequence=GROUP_COLOURS[kk],
+                             labels={"pc1": f"Component 1 ({share[0] * 100:.0f}% of variation)",
+                                     "pc2": f"Component 2 ({share[1] * 100:.0f}% of variation)"})
+            fig.update_traces(textposition="top center", marker=dict(size=12))
+            st.plotly_chart(style_fig(fig, 460), width="stretch")
+            means = d.groupby("Group")[feats + ["Composite"]].mean().reindex(names)
+            st.dataframe(pd.DataFrame({adv_label(v): means[v].map(lambda x, v=v: adv_fmt(v, x)) for v in feats + ["Composite"]}),
+                         width="stretch")
+            st.caption("Ward hierarchical clustering on standardised net margin, ROE, current ratio, debt/equity and FCF "
+                       "margin. Each point is one company-year (ticker and year); the two axes are the main directions "
+                       "of difference between them. Groups are named by their average risk score. ESG indicators are "
+                       "left out because too many company-years have gaps.")
+
+    # ---- Scoring index ---------------------------------------------------------------
+    with tabs[7]:
+        pillars = [x for x in ["Profitability", "Liquidity", "Solvency", "Cash generation", "Stability", "ESG"] if x in cur_sc]
+        t = cur_sc[pillars + ["Composite"]].reindex(order).rename(columns={"Composite": "Risk score"})
+        t["ESGRQ (2025 reports)"] = now.ESGRQ
+        t = t.sort_values("Risk score", ascending=False)
+        st.dataframe(t.style.format("{:.0f}", na_rep="–"), width="stretch")
+        long = t[["Risk score", "ESGRQ (2025 reports)"]].reset_index().melt("company", var_name="Index", value_name="Score")
+        fig = px.bar(long, x="company", y="Score", color="Index", barmode="group", text=long.Score.map(lambda v: "" if pd.isna(v) else f"{v:.0f}"),
+                     color_discrete_sequence=[NAVY, ORANGE], labels={"company": "", "Score": "Index (0–100)"})
+        fig.update_yaxes(range=[0, 105])
+        st.plotly_chart(style_fig(fig, 380), width="stretch")
+        w = st.session_state.weights
+        st.caption(f"FY{year}. The risk score is a weighted mean of the pillar scores ("
+                   + ", ".join(f"{k} {v}%" for k, v in w.items() if v) + "); change the weights on the Risk scorecard "
+                   "page. ESGRQ measures the quality of ESG reporting, not ESG performance. Neither index is an "
+                   "investment recommendation.")
+
+    # ---- Descriptive analysis --------------------------------------------------------
+    with tabs[8]:
+        dv = ["revenue_growth", "net_margin", "roe", "roa", "current_ratio", "debt_to_equity", "interest_cover",
+              "fcf_margin", "Composite", "ESG", "ghg_intensity", "energy_intensity", LT, FA, WO]
+        rows = []
+        for v in dv:
+            s = p[v].dropna()
+            if s.empty:
+                continue
+            rows.append({"Variable": adv_label(v), "n": len(s), "Mean": adv_fmt(v, s.mean()), "Median": adv_fmt(v, s.median()),
+                         "Minimum": adv_fmt(v, s.min()), "Maximum": adv_fmt(v, s.max()),
+                         "Std. dev.": adv_fmt(v, s.std()) if len(s) > 1 else "–"})
+        st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch", height=38 * (len(rows) + 1))
+        st.caption("Pooled over the selected companies and FY2021–FY2025. n is the number of company-years with a "
+                   "value; the standard deviation is the sample standard deviation.")
+        var = st.selectbox("Distribution by company", dv, index=1, format_func=adv_label, key="adv_box")
+        fig = px.box(p.dropna(subset=[var]), x="company", y=var, color="company", color_discrete_map=COLOURS,
+                     points="all", category_orders={"company": order}, labels={"company": "", var: adv_label(var)})
+        st.plotly_chart(style_fig(fig, 380, legend=False), width="stretch")
+
+    # ---- Data visualisation ----------------------------------------------------------
+    with tabs[9]:
+        idx = [x for x in ["Profitability", "Liquidity", "Solvency", "Cash generation", "Stability", "ESG"] if x in cur_sc]
+        prof = cur_sc[idx].reindex(order)
+        prof["ESGRQ"] = now.ESGRQ
+        prof = prof.dropna(axis=1, how="all")
+        fig = go.Figure()
+        for c in order:
+            vals = prof.loc[c].tolist()
+            fig.add_trace(go.Scatterpolar(r=vals + vals[:1], theta=list(prof.columns) + [prof.columns[0]], name=c,
+                                          mode="lines", line=dict(color=COLOURS[c], width=2)))
+        fig.update_layout(polar=dict(radialaxis=dict(range=[0, 100], showticklabels=False, gridcolor="#E8ECF1"),
+                                     angularaxis=dict(gridcolor="#E8ECF1"), bgcolor="#FFFFFF"))
+        fig = style_fig(fig, 480).update_layout(margin=dict(l=70, r=70, t=40, b=100),
+                                                legend=dict(orientation="h", y=-0.2, yanchor="top", x=0.5, xanchor="center"))
+        st.plotly_chart(fig, width="stretch")
+        long = prof.reset_index().melt("company", var_name="Measure", value_name="Score")
+        fig = px.bar(long, x="Measure", y="Score", color="company", barmode="group", color_discrete_map=COLOURS,
+                     category_orders={"company": order}, labels={"Measure": "", "Score": "Indexed score (0–100)"})
+        fig.update_yaxes(range=[0, 105])
+        st.plotly_chart(style_fig(fig, 400), width="stretch")
+        st.caption(f"FY{year}. Every measure is on the same 0–100 scale, 100 being the strongest position in the sample, "
+                   "so financial strength, ESG performance and reporting quality (ESGRQ) can be read together.")
+
+    # ---- Insight summary -------------------------------------------------------------
+    st.subheader("Automated insight summary")
+    st.caption(f"Generated from the current selection (FY{year}, {len(order)} companies). A starting point for the "
+               "results and discussion sections; check each statement against the cited source before quoting it.")
+    for text, warn in insights() + adv_insights(p, comp, data, ry, adv_anomalies(p, 3.5), themes):
+        st.markdown(f'<div class="insight{" warn" if warn else ""}">{text}</div>', unsafe_allow_html=True)
+
+    # ---- Traceable dataset -----------------------------------------------------------
+    st.subheader("Traceable dataset")
+    tr = trace_table(data, themes)
+    sets = list(dict.fromkeys(tr.Dataset))
+    pick = st.multiselect("Show", sets, default=sets, key="adv_sets")
+    view = tr[tr.Dataset.isin(pick)]
+    has_page = view["Location in source"].str.contains(r"p\.\s?\d|row \d|Sheet", case=False, regex=True)
+    k = st.columns(3)
+    k[0].metric("Observations", f"{len(view):,}")
+    k[1].metric("With a source document", f"{(view['Source document'] != '').mean() * 100:.0f}%" if len(view) else "–")
+    k[2].metric("With a page, sheet or row", f"{has_page.mean() * 100:.0f}%" if len(view) else "–")
+    st.dataframe(view, hide_index=True, width="stretch", height=380,
+                 column_config={"Year": st.column_config.NumberColumn(format="%d")})
+    st.caption("Every value the dashboard uses, with the document it came from and where in that document. Financial "
+               "lines trace to the workbook sheet and row; ESG values, reporting-quality scores and text themes trace "
+               "to the report page.")
+    st.download_button("Download traceable dataset (CSV)", tr.to_csv(index=False).encode("utf-8-sig"),
+                       "traceable_dataset.csv", "text/csv")
+
+    # ---- Data dictionary -------------------------------------------------------------
+    st.subheader("Data dictionary")
+    dd = full_dictionary()
+    st.dataframe(dd, hide_index=True, width="stretch", height=380)
+    st.download_button("Download data dictionary (CSV)", dd.to_csv(index=False).encode("utf-8-sig"),
+                       "data_dictionary.csv", "text/csv")
+
+
 {
     "Overview": page_overview, "Reporting quality": page_esgrq, "Trends": page_trends, "Peer benchmark": page_benchmark,
     "Risk scorecard": page_scorecard, "ESG indicators": page_esg, "Relationships": page_relationships,
-    "Company profile": page_profile, "Data and quality": page_data, "Test the dashboard": page_test,
+    "Advanced analytics": page_advanced, "Company profile": page_profile,
+    "Data and quality": page_data, "Test the dashboard": page_test,
 }[page]()

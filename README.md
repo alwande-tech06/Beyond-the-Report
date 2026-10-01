@@ -15,7 +15,11 @@ repository and deploy it free on Streamlit Community Cloud (share.streamlit.io),
 
 ## Folder contents
 
-- `app.py` - the dashboard (10 pages).
+- `app.py` - the dashboard (11 pages). The Advanced analytics page holds the ratio table, anomaly detection,
+  benchmarking, comparison, regression, report-text analysis, clustering, scoring, descriptive statistics, the
+  automated insight summary, the traceable dataset and the full data dictionary.
+- `nlp.py` - report-text analytics. Run `python nlp.py` to re-scan the report PDFs in the folder above and rewrite
+  `data/report_themes.csv` (theme counts with an example sentence and PDF page per report).
 - `esgrq.py` - ESG Reporting Quality index (paper section 9 / Appendix A): 17 items scored 0-4, six
   dimensions, comparability, assurance and validation (second-coder agreement, weighted kappa).
   Run `python esgrq.py` to print the scores.
@@ -41,7 +45,7 @@ repository and deploy it free on Streamlit Community Cloud (share.streamlit.io),
 1. Fill in `report_page` for every extracted line (Data and quality page, download the CSV).
 2. Fix the High-severity items listed on the Data and quality page.
 3. `data/esgrq_coding.xlsx` holds an AI-drafted first coding of the 2025 reports (coder column says so).
-   A group member must verify every score against the cited page. Sibanye-Stillwater is not yet coded.
+   A group member must verify every score against the cited page (all five companies are coded).
    Second coder: fill `data/esgrq_recheck_blind.xlsx` (no first-coder scores shown) without opening the
    coding workbook, then run `python esgrq.py merge`. Regenerate the blind sheet with `python esgrq.py blind`.
    Declare the AI-assisted coding in the AI-use declaration.
