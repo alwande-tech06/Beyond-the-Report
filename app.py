@@ -100,14 +100,18 @@ def get_wide(fx_items: tuple | None) -> pd.DataFrame:
     return L.build_wide(get_long(), dict(fx_items) if fx_items else None)
 
 
+@st.cache_data
+def load_esg_file(mtime: float) -> pd.DataFrame:
+    return L.load_esg(ESG_FILE)
+
+
 def get_esg() -> pd.DataFrame:
+    """An uploaded file (this session only) takes precedence; otherwise data/esg_data.csv as currently saved."""
     if "esg_df" in st.session_state:
         return st.session_state.esg_df
     if ESG_FILE.exists():
         try:
-            df = L.load_esg(ESG_FILE)
-            st.session_state.esg_df = df
-            return df
+            return load_esg_file(ESG_FILE.stat().st_mtime)
         except Exception as e:  # noqa: BLE001
             st.sidebar.error(f"data/esg_data.csv could not be read: {e}")
     return pd.DataFrame(columns=L.ESG_COLUMNS)
@@ -616,40 +620,65 @@ def page_trends():
         st.dataframe(chg, width="stretch")
 
 
+def bench_heat(frame: pd.DataFrame, rows: list[str], height: int) -> go.Figure:
+    """Rank heatmap: colour = position among the selected peers (direction-aware), text = actual value."""
+    z, text = [], []
+    for v in rows:
+        s = frame[v]
+        rk = s.rank(pct=True) if s.notna().sum() >= 2 else s * np.nan
+        if adv_better(v) == "lower":
+            rk = 1 - rk + 1 / max(s.notna().sum(), 1)
+        z.append(rk.values)
+        text.append([adv_fmt(v, x) for x in s.values])
+    fig = go.Figure(go.Heatmap(
+        z=z, x=list(frame.index), y=[adv_label(v) for v in rows], text=text, texttemplate="%{text}",
+        colorscale=[[0, "#F5B041"], [0.5, "#EEF1F5"], [1, "#6E9CC8"]], zmin=0, zmax=1, showscale=False,
+        xgap=2, ygap=2, hoverongaps=False, hovertemplate="%{x}<br>%{y}: %{text}<extra></extra>",
+    ))
+    fig.update_yaxes(autorange="reversed", showgrid=False)
+    return style_fig(fig, height, legend=False)
+
+
 def page_benchmark():
     st.title("Peer benchmark")
-    st.markdown(f'<p class="lede">FY{year}. Colour shows each company\'s rank within the selected peers on every ratio, '
-                "with direction taken into account (green = stronger). The number in each cell is the actual value.</p>",
-                unsafe_allow_html=True)
+    st.markdown(f'<p class="lede">FY{year}. Colour shows each company’s rank within the selected peers on every measure, '
+                "with direction taken into account (blue = stronger, orange = weaker). The number in each cell is the "
+                "actual value.</p>", unsafe_allow_html=True)
     ratio_list = ["net_margin", "ebit_margin", "gross_margin", "roa", "roe", "current_ratio", "quick_ratio",
                   "debt_to_equity", "liabilities_to_assets", "interest_cover", "ocf_margin", "fcf_margin",
                   "revenue_growth"]
-    better = L.DICT_DF.set_index("variable").better_when
-    z, text = [], []
-    for v in ratio_list:
-        s = cur[v]
-        rk = s.rank(pct=True)
-        if better.get(v) == "lower":
-            rk = 1 - rk + 1 / max(s.notna().sum(), 1)
-        z.append(rk.values)
-        text.append([fmt_metric(v, x) for x in s.values])
-    fig = go.Figure(go.Heatmap(
-        z=z, x=list(cur.index), y=[L.LABELS[v] for v in ratio_list], text=text, texttemplate="%{text}",
-        colorscale=[[0, "#F5B041"], [0.5, "#EEF1F5"], [1, "#6E9CC8"]], showscale=False, xgap=2, ygap=2,
-        hovertemplate="%{x}<br>%{y}: %{text}<extra></extra>",
-    ))
-    fig.update_yaxes(autorange="reversed", showgrid=False)
-    st.plotly_chart(style_fig(fig, 560, legend=False), width="stretch")
+    st.subheader("Financial")
+    st.plotly_chart(bench_heat(cur, ratio_list, 560), width="stretch")
+
+    st.subheader("ESG")
+    p = adv_panel()
+    now = p[p.fiscal_year == year].set_index("company").reindex(cur.index)
+    _, ry, comp = esgrq_latest()
+    now["ESGRQ"] = comp.ESGRQ.reindex(cur.index) if comp is not None else np.nan
+    esg_list = [v for v in ["ESG", "ESGRQ", "ghg_intensity", "energy_intensity", LT, FA, WO,
+                            "Women on board", "Independent directors on board"] if v in now]
+    if now[esg_list].notna().sum().sum() == 0:
+        st.info("No ESG values for this year yet. Load them on the ESG indicators page.")
+    else:
+        st.plotly_chart(bench_heat(now, esg_list, 440), width="stretch")
+        missing = [c for c in cur.index if now.loc[c, esg_list].notna().sum() <= 1]
+        st.caption("ESG performance score: the captured indicators scaled 0–100. ESGRQ: quality of ESG reporting in the "
+                   f"{ry or 2025} reports. Intensities divide by revenue in rand. A dash means the value has not been "
+                   "captured, so that company is not ranked on that row."
+                   + (f" {', '.join(missing)} has almost no ESG values for FY{year}." if missing else ""))
 
     st.subheader("Against the peer median")
-    var = st.selectbox("Ratio", ratio_list, format_func=lambda v: L.LABELS[v])
-    d = cur[[var]].reset_index()
+    choices = ratio_list + [v for v in esg_list if now[v].notna().sum() >= 2]
+    var = st.selectbox("Measure", choices, format_func=adv_label)
+    src = cur if var in ratio_list else now
+    d = src[[var]].dropna().reset_index()
     med = d[var].median()
-    fig = px.bar(d, x="company", y=var, color="company", color_discrete_map=COLOURS, text=d[var].map(lambda x: fmt_metric(var, x)),
-                 labels={"company": "", var: L.LABELS[var]})
-    fig.add_hline(y=med, line_dash="dot", line_color="#1E2328", annotation_text=f"Peer median {fmt_metric(var, med)}",
+    fig = px.bar(d, x="company", y=var, color="company", color_discrete_map=COLOURS,
+                 text=d[var].map(lambda x: adv_fmt(var, x)), labels={"company": "", var: adv_label(var)})
+    fig.add_hline(y=med, line_dash="dot", line_color="#1E2328", annotation_text=f"Peer median {adv_fmt(var, med)}",
                   annotation_position="top left")
     st.plotly_chart(style_fig(fig, 380, legend=False), width="stretch")
+    st.caption(f"For {adv_label(var).lower()}, {adv_better(var)} is better.")
 
 
 def page_scorecard():
@@ -759,6 +788,7 @@ def page_esg():
                 df = L.load_esg(up)
                 if st.session_state.get("esg_upload") != up.file_id:
                     st.session_state.esg_upload = up.file_id
+                    st.session_state.esg_name = up.name
                     st.session_state.esg_df = df
                     st.rerun()
                 st.success(f"Loaded {len(df)} ESG values from {up.name}.")
@@ -766,11 +796,18 @@ def page_esg():
                     st.warning(w)
             except Exception as e:  # noqa: BLE001
                 st.error(f"Could not read the file: {e}")
-        if not esg.empty and st.button("Remove ESG data"):
-            st.session_state.pop("esg_df", None)
-            st.session_state.esg_df = pd.DataFrame(columns=L.ESG_COLUMNS)
-            st.rerun()
-        st.caption("To load it automatically, save the file as data/esg_data.csv.")
+        if "esg_df" in st.session_state:
+            name = st.session_state.get("esg_name", "an uploaded file")
+            st.warning(f"Showing **{name}** ({len(esg)} values), for this session only. Every page uses it "
+                       "instead of the saved data/esg_data.csv.")
+            if st.button("Go back to the saved data"):
+                for k in ("esg_df", "esg_name"):
+                    st.session_state.pop(k, None)
+                st.rerun()
+        elif not esg.empty:
+            st.caption(f"Showing the saved file data/esg_data.csv: {len(esg)} values for "
+                       f"{esg.company.nunique()} companies.")
+        st.caption("To load a file for everyone, save it as data/esg_data.csv and push it.")
 
     if esg.empty:
         st.info("No ESG values loaded yet. Once loaded, this page shows disclosure coverage, indicator trends, "
@@ -1013,6 +1050,8 @@ ADV = {
     LT: ("LTIFR (per million hours)", "{:.2f}", "lower"),
     FA: ("Fatalities", "{:.0f}", "lower"),
     WO: ("Women in workforce", "{:.1f}%", "higher"),
+    "Women on board": ("Women on board", "{:.0f}%", "higher"),
+    "Independent directors on board": ("Independent directors on board", "{:.0f}%", "higher"),
 }
 GROUP_NAMES = {2: ["Stronger profile", "Weaker profile"],
                3: ["Stronger profile", "Middle profile", "Weaker profile"],
